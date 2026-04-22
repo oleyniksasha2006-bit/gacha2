@@ -122,6 +122,26 @@
         .joystick-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #d47a9e; background: rgba(255, 255, 255, 1); }
         .joystick-empty { visibility: hidden; }
 
+        /* ---------- АНИМАЦИЯ ЗВЕЗДЫ ---------- */
+        .star-animation-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .star-animation-overlay.active { display: flex; }
+        .star-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; }
+        .star-svg { width: 200px; height: 200px; filter: drop-shadow(0 0 30px rgba(100, 181, 246, 0.8)); animation: starRotate 3s ease-in-out infinite; }
+        .star-svg.gold { filter: drop-shadow(0 0 40px #ffd54f); }
+        @keyframes starRotate { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.1); } 100% { transform: rotate(360deg) scale(1); } }
+        .star-text { position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); color: white; font-size: 1.5rem; text-shadow: 0 2px 10px rgba(100, 181, 246, 0.8); font-weight: 500; letter-spacing: 3px; white-space: nowrap; }
+        .star-text.gold { text-shadow: 0 2px 15px #ffd54f; }
+        .skip-animation-btn {
+            position: absolute; bottom: 30px; right: 30px; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.5); border-radius: 40px; padding: 12px 24px; color: white;
+            font-size: 1rem; font-weight: 600; cursor: pointer; z-index: 2010; transition: 0.2s;
+        }
+        .skip-animation-btn:hover { background: rgba(255,255,255,0.3); }
+
         /* ---------- ГЛАВНОЕ МЕНЮ И ВХОД ---------- */
         .login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -497,6 +517,17 @@
     </div>
 </div>
 
+<!-- АНИМАЦИЯ ЗВЕЗДЫ -->
+<div class="star-animation-overlay" id="starAnimation">
+    <div class="star-container">
+        <svg class="star-svg" id="starSvg" viewBox="0 0 100 100">
+            <polygon points="50,5 61,35 93,35 67,53 78,85 50,67 22,85 33,53 7,35 39,35" fill="#64b5f6" stroke="#fff" stroke-width="1.5"/>
+        </svg>
+        <div class="star-text" id="starText">✨ Молитва ✨</div>
+    </div>
+    <button class="skip-animation-btn" id="skipStarBtn">Пропустить ⏭</button>
+</div>
+
 <!-- ЭКРАН ВХОДА -->
 <div class="login-screen" id="loginScreen">
     <div class="login-card">
@@ -527,7 +558,7 @@
                 <div class="gazebo" id="gazeboShop" style="left: 600px; top: 400px;"><span class="gazebo-icon">🛒</span><span class="gazebo-name">Лавка</span><div class="interact-hint" id="hintShop">Нажмите E / У</div></div>
                 <div class="gazebo" id="gazeboForge" style="left: 400px; top: 450px;"><span class="gazebo-icon">⚒️</span><span class="gazebo-name">Кузница</span><div class="interact-hint" id="hintForge">Нажмите E / У</div></div>
                 <div class="gazebo" id="gazeboGarden" style="left: 700px; top: 150px;"><span class="gazebo-icon">🌿</span><span class="gazebo-name">Сад</span><div class="interact-hint" id="hintGarden">Нажмите E / У</div></div>
-                <div class="enemy-group" id="enemyGroup" style="left: 350px; top: 200px; display: none;"><span>👹</span><div class="interact-hint" id="hintEnemy">Нажмите E / У</div></div>
+                <div class="enemy-group" id="enemyGroup" style="left: 425px; top: 200px; display: none;"><span>👹</span><div class="interact-hint" id="hintEnemy">Нажмите E / У</div></div>
             </div>
         </div>
     </div>
@@ -1101,9 +1132,8 @@
                     <p><strong>Вы:</strong> "Здравствуйте. Что тут у вас происходит?"</p>
                     <p><strong>Трактирщик:</strong> "Беда у нас. В лесу завелись монстры, нападают на торговцев. Никто не может пройти."</p>
                     <p><strong>Вы:</strong> "Я могу помочь. Что нужно делать?"</p>
-                    <p><strong>Трактирщик:</strong> "Одолей трёх тварей, что поселились между таверной и лавкой. Справишься — получишь награду."</p>
+                    <p><strong>Трактирщик:</strong> "Одолей трёх тварей, что поселились между таверной и садом. Справишься — получишь награду."</p>
                     <p><strong>Вы:</strong> "По рукам. Я разберусь с ними."</p>
-                    <p><em>~ Задание "Одолеть противников" добавлено в дневник ~</em></p>
                 </div>`;
                 html += `<button class="gazebo-menu-btn" data-action="accept" style="width:100%; padding:15px; background:linear-gradient(145deg,#f8bbd0,#f48fb1); border:none; border-radius:40px; color:white; font-weight:600; cursor:pointer; box-shadow:0 4px 0 #b3415c;">Принять задание</button>`;
             } else if (key === 'shop') {
@@ -1128,9 +1158,9 @@
                         }
                         missionAccepted = true;
                         updateEnemyVisibility();
-                        showNotification('✅ Задание принято! Враги появились на карте.', 0);
-                        saveCloudProgress(currentUser);
                         gazeboModal.classList.remove('active');
+                        showNotification('✅ Задание "Одолеть противников" добавлено в дневник!', 0);
+                        saveCloudProgress(currentUser);
                     } else if (action === 'shop') {
                         gazeboModal.classList.remove('active');
                         openShopModal();
@@ -1315,8 +1345,11 @@
             html += `<div style="display:grid; gap:10px; max-height:300px; overflow-y:auto;">`;
             available.forEach(item => {
                 const fullItem = findItem(item.name, item.rarity);
+                const lvl = itemLevels[`${item.rarity}-${item.name}`] || 1;
+                const hp = fullItem.baseHp + (lvl - 1) * 2;
+                const atk = fullItem.baseAtk + (lvl - 1);
                 html += `<div style="padding:12px; background:rgba(255,255,255,0.4); border-radius:20px; cursor:pointer;" data-id="${item.rarity}-${item.name}">`;
-                html += `${fullItem.emoji} ${fullItem.name} (❤️ ${fullItem.baseHp} ⚔️ ${fullItem.baseAtk})`;
+                html += `${fullItem.emoji} ${fullItem.name} (❤️ ${hp} ⚔️ ${atk})`;
                 html += `</div>`;
             });
             html += `</div>`;
@@ -1470,13 +1503,11 @@
             }
             
             let dmg = attacker.atk;
-            let isSuper = false;
             
             attacker.charge++;
             if (attacker.charge >= 3) {
                 attacker.charge = 0;
                 dmg *= 2;
-                isSuper = true;
                 s.log.push(`💥 СУПЕР-АТАКА!`);
             }
             
@@ -1535,7 +1566,6 @@
         }
 
         function endBattle(victory) {
-            const s = battleState;
             battleModal.classList.remove('active');
             
             if (victory) {
@@ -1738,8 +1768,7 @@
                 });
             });
         }
-
-        // ---------- ГАЧА ----------
+                // ---------- ГАЧА ----------
         async function performWishSequence(wishCount) {
             if (isAnimating) return;
             
@@ -1845,13 +1874,33 @@
             currentItems = items;
             currentItemIndex = 0;
             
-            if (items.length === 1) {
+            // Показываем анимацию звезды
+            const skipToItems = await showStarAnimation(hasLegendary);
+            
+            if (skipToItems) {
+                // Пропускаем показ по одному, показываем список
+                showItemsList(items);
+            } else if (items.length === 1) {
+                // Один предмет — показываем в модалке
                 showSingleItem(items[0]);
             } else {
-                showItemsList(items);
+                // Несколько предметов — показываем первый, остальные в очередь
+                showSingleItem(items[0]);
+                // Остальные добавим в очередь для последовательного показа
+                for (let i = 1; i < items.length; i++) {
+                    modalQueue.push(items[i]);
+                }
             }
             
             saveCloudProgress(currentUser);
+        }
+
+        let modalQueue = [];
+        
+        function showNextModalItem() {
+            if (modalQueue.length > 0) {
+                showSingleItem(modalQueue.shift());
+            }
         }
 
         function addToHistory(rarity, itemName, emoji) {
@@ -1870,10 +1919,30 @@
             modalEmoji.textContent = item.emoji;
             modalName.textContent = item.name;
             let starsText = '';
-            if (item.rarity === 5) starsText = '★★★★★';
-            else if (item.rarity === 4) starsText = '★★★★';
-            else starsText = '★★★';
+            let badgeText = '';
+            let badgeClass = '';
+            
+            if (item.rarity === 5) {
+                starsText = '★★★★★';
+                badgeText = '5★ ЛЕГЕНДАРНЫЙ';
+                badgeClass = 'rarity-5-badge';
+                modalContent.classList.add('modal-legendary');
+            } else if (item.rarity === 4) {
+                starsText = '★★★★';
+                badgeText = '4★ ЭПИЧЕСКИЙ';
+                badgeClass = 'rarity-4-badge';
+                modalContent.classList.remove('modal-legendary');
+            } else {
+                starsText = '★★★';
+                badgeText = '3★ ОБЫЧНЫЙ';
+                badgeClass = 'rarity-3-badge';
+                modalContent.classList.remove('modal-legendary');
+            }
+            
             modalStars.textContent = starsText;
+            modalRarityBadge.textContent = badgeText;
+            modalRarityBadge.className = `modal-rarity-badge ${badgeClass}`;
+            
             gachaModal.classList.add('active');
         }
 
@@ -1881,15 +1950,63 @@
             let html = '';
             items.forEach(item => {
                 let stars = '★★★';
-                if (item.rarity === 5) stars = '★★★★★';
-                else if (item.rarity === 4) stars = '★★★★';
-                html += `<div class="items-list-item rarity-${item.rarity}">`;
+                let rarityClass = 'rarity-3';
+                if (item.rarity === 5) { stars = '★★★★★'; rarityClass = 'rarity-5'; }
+                else if (item.rarity === 4) { stars = '★★★★'; rarityClass = 'rarity-4'; }
+                html += `<div class="items-list-item ${rarityClass}">`;
                 html += `<span style="font-size:2rem;">${item.emoji}</span>`;
                 html += `<div style="flex:1;"><div style="font-weight:600;">${item.name}</div><div>${stars}</div></div>`;
                 html += `</div>`;
             });
             itemsListGrid.innerHTML = html;
             itemsListModal.classList.add('active');
+        }
+
+        function closeGachaModal() {
+            gachaModal.classList.remove('active');
+            showNextModalItem();
+        }
+
+        // ---------- АНИМАЦИЯ ЗВЕЗДЫ ----------
+        function showStarAnimation(hasLegendary) {
+            return new Promise((resolve) => {
+                isAnimating = true;
+                updateUI();
+                
+                if (hasLegendary) {
+                    starSvg.classList.add('gold');
+                    starSvg.querySelector('polygon').setAttribute('fill', '#ffd54f');
+                    starText.classList.add('gold');
+                } else {
+                    starSvg.classList.remove('gold');
+                    starSvg.querySelector('polygon').setAttribute('fill', '#64b5f6');
+                    starText.classList.remove('gold');
+                }
+                
+                starAnimation.classList.add('active');
+                starResolve = resolve;
+                
+                const timeout = setTimeout(() => {
+                    closeStarAnimation(false);
+                }, 2000);
+                
+                skipStarBtn.onclick = () => {
+                    clearTimeout(timeout);
+                    closeStarAnimation(true);
+                };
+            });
+        }
+
+        function closeStarAnimation(skipToItems = false) {
+            starAnimation.classList.remove('active');
+            isAnimating = false;
+            updateUI();
+            
+            if (starResolve) {
+                starResolve(skipToItems);
+                starResolve = null;
+            }
+            skipStarBtn.onclick = null;
         }
 
         // ---------- ИСТОРИЯ ----------
@@ -2215,12 +2332,21 @@
             document.getElementById('closeBattleBtn').addEventListener('click', () => { battleModal.classList.remove('active'); battleState = null; });
             document.getElementById('closeShopBtn').addEventListener('click', () => shopModal.classList.remove('active'));
             document.getElementById('closeBuyBtn').addEventListener('click', () => buyModal.classList.remove('active'));
-            document.getElementById('closeModalBtn').addEventListener('click', () => gachaModal.classList.remove('active'));
+            document.getElementById('closeModalBtn').addEventListener('click', closeGachaModal);
             document.getElementById('closeItemsListBtn').addEventListener('click', () => itemsListModal.classList.remove('active'));
             document.getElementById('closeGalleryItemBtn').addEventListener('click', () => galleryItemModal.classList.remove('active'));
             document.getElementById('accountBtn').addEventListener('click', openAccountModal);
             document.getElementById('closeAccountBtn').addEventListener('click', () => accountModal.classList.remove('active'));
             document.getElementById('saveAccountBtn').addEventListener('click', saveAccountChanges);
+            
+            // Закрытие модалки гачи по клику на оверлей
+            gachaModal.addEventListener('click', (e) => {
+                if (e.target === gachaModal) closeGachaModal();
+            });
+            
+            itemsListModal.addEventListener('click', (e) => {
+                if (e.target === itemsListModal) itemsListModal.classList.remove('active');
+            });
             
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2270,6 +2396,53 @@
             document.getElementById('nextBannerBtn').addEventListener('click', nextBanner);
             document.getElementById('resetBtn').addEventListener('click', resetAll);
             document.getElementById('addGemsBtn').addEventListener('click', () => { gems += 1600; updateUI(); saveCloudProgress(currentUser); });
+            
+            prevItemBtn.addEventListener('click', () => {
+                if (currentItemIndex > 0) {
+                    currentItemIndex--;
+                    updateModalContent(currentItems[currentItemIndex]);
+                }
+            });
+            
+            nextItemBtn.addEventListener('click', () => {
+                if (currentItemIndex < currentItems.length - 1) {
+                    currentItemIndex++;
+                    updateModalContent(currentItems[currentItemIndex]);
+                }
+            });
+            
+            function updateModalContent(item) {
+                modalEmoji.textContent = item.emoji;
+                modalName.textContent = item.name;
+                let starsText = '';
+                let badgeText = '';
+                let badgeClass = '';
+                
+                if (item.rarity === 5) {
+                    starsText = '★★★★★';
+                    badgeText = '5★ ЛЕГЕНДАРНЫЙ';
+                    badgeClass = 'rarity-5-badge';
+                    modalContent.classList.add('modal-legendary');
+                } else if (item.rarity === 4) {
+                    starsText = '★★★★';
+                    badgeText = '4★ ЭПИЧЕСКИЙ';
+                    badgeClass = 'rarity-4-badge';
+                    modalContent.classList.remove('modal-legendary');
+                } else {
+                    starsText = '★★★';
+                    badgeText = '3★ ОБЫЧНЫЙ';
+                    badgeClass = 'rarity-3-badge';
+                    modalContent.classList.remove('modal-legendary');
+                }
+                
+                modalStars.textContent = starsText;
+                modalRarityBadge.textContent = badgeText;
+                modalRarityBadge.className = `modal-rarity-badge ${badgeClass}`;
+                itemCounter.textContent = `${currentItemIndex + 1} / ${currentItems.length}`;
+                
+                prevItemBtn.classList.toggle('disabled', currentItemIndex === 0);
+                nextItemBtn.classList.toggle('disabled', currentItemIndex === currentItems.length - 1);
+            }
             
             prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderHistoryPage(); } });
             nextPageBtn.addEventListener('click', () => { const total = Math.ceil(history.length / ITEMS_PER_PAGE) || 1; if (currentPage < total) { currentPage++; renderHistoryPage(); } });
