@@ -3,28 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌸 Солнечная Гача · Полное обновление</title>
+    <title>🌸 Солнечная Гача · Средневековье</title>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
+    <!-- Средневековый шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             min-height: 100vh;
-            background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #f06292 100%);
+            background: linear-gradient(145deg, #2d1a1a 0%, #4a2a2a 30%, #3d2020 70%, #2a1515 100%);
             background-attachment: fixed;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Quicksand', 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Cormorant Garamond', 'Cinzel', serif;
             padding: 20px;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
             transition: background 0.5s ease;
+        }
+
+        /* Лианы на переднем плане */
+        .vine {
+            position: fixed;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.7;
+        }
+        .vine-1 {
+            top: -20px;
+            left: -10px;
+            width: 200px;
+            height: 400px;
+            background: linear-gradient(135deg, transparent 60%, rgba(60, 80, 20, 0.4) 80%, transparent 95%);
+            transform: rotate(15deg);
+            border-radius: 0 0 100px 50px;
+            box-shadow: inset 0 -10px 20px rgba(30, 40, 10, 0.3);
+        }
+        .vine-2 {
+            top: 50px;
+            right: -20px;
+            width: 180px;
+            height: 350px;
+            background: linear-gradient(225deg, transparent 50%, rgba(50, 70, 15, 0.35) 75%, transparent 90%);
+            transform: rotate(-20deg);
+            border-radius: 50px 0 0 100px;
+        }
+        .vine-3 {
+            bottom: -30px;
+            left: 20%;
+            width: 250px;
+            height: 150px;
+            background: radial-gradient(ellipse at top left, rgba(40, 60, 10, 0.3), transparent 70%);
+            transform: rotate(-5deg);
+        }
+        .vine-4 {
+            bottom: 10px;
+            right: 15%;
+            width: 150px;
+            height: 200px;
+            background: linear-gradient(45deg, transparent 40%, rgba(55, 75, 20, 0.25) 70%, transparent 90%);
+            transform: rotate(10deg);
+        }
+        .vine-leaf {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(50, 80, 20, 0.4);
+            border-radius: 80% 0 60% 40%;
+            transform: rotate(45deg);
+            filter: blur(1px);
         }
 
         /* Фоны для разных экранов */
@@ -47,7 +102,7 @@
             background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important;
         }
         body.settings-background {
-            background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #f06292 100%);
+            background: linear-gradient(145deg, #2d1a1a 0%, #4a2a2a 30%, #3d2020 70%, #2a1515 100%);
         }
 
         /* Затемнение для читаемости */
@@ -64,14 +119,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 220, 220, 0.3);
+            background: rgba(20, 10, 5, 0.35);
             backdrop-filter: blur(3px);
             pointer-events: none;
             z-index: 0;
         }
 
         body.standard-banner {
-            background: linear-gradient(145deg, #e3f2fd 0%, #bbdefb 30%, #90caf9 70%, #64b5f6 100%);
+            background: linear-gradient(145deg, #1a2a3a 0%, #2a3a4a 30%, #1a2a3a 70%, #0d1a2a 100%);
         }
 
         body::before {
@@ -81,22 +136,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 220, 240, 0.2) 0%, transparent 30%),
-                        radial-gradient(circle at 80% 70%, rgba(255, 200, 220, 0.15) 0%, transparent 40%);
+            background: radial-gradient(circle at 20% 30%, rgba(255, 220, 180, 0.1) 0%, transparent 30%),
+                        radial-gradient(circle at 80% 70%, rgba(200, 160, 120, 0.08) 0%, transparent 40%);
             pointer-events: none;
             z-index: 0;
             animation: bgPulse 12s ease-in-out infinite alternate;
         }
 
         @keyframes bgPulse {
-            0% { opacity: 0.6; transform: scale(1); }
-            100% { opacity: 1; transform: scale(1.05); }
+            0% { opacity: 0.4; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1.05); }
         }
 
         /* Анимации для модальных окон */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px);
             display: none; justify-content: center; align-items: center; z-index: 1500;
             opacity: 0;
             transition: opacity 0.25s ease;
@@ -107,14 +162,15 @@
         }
 
         .gacha-modal {
-            background: linear-gradient(145deg, #fff0f5, #fce4ec);
-            border-radius: 60px; padding: 40px; max-width: 400px; width: 90%;
-            text-align: center; border: 3px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 30px 60px rgba(240, 98, 146, 0.4);
+            background: linear-gradient(145deg, #f5e6d0, #e8d4b8);
+            border-radius: 30px; padding: 35px; max-width: 600px; width: 90%;
+            text-align: center; border: 3px solid #8b6914;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(139, 105, 20, 0.2);
             position: relative;
             transform: scale(0.9);
             opacity: 0;
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+            font-family: 'Cormorant Garamond', serif;
         }
         .modal-overlay.active .gacha-modal {
             transform: scale(1);
@@ -122,19 +178,137 @@
         }
 
         .modal-close {
-            position: absolute; top: 20px; right: 25px;
-            font-size: 2rem; cursor: pointer; color: #4a0a1a;
+            position: absolute; top: 15px; right: 20px;
+            font-size: 2rem; cursor: pointer; color: #5a3a1a;
             width: 40px; height: 40px; display: flex; align-items: center;
             justify-content: center; border-radius: 50%;
-            background: rgba(255,255,255,0.3);
+            background: rgba(139, 105, 20, 0.2);
             transition: transform 0.2s ease, background 0.2s;
+            font-family: serif;
         }
         .modal-close:hover {
             transform: rotate(90deg);
-            background: rgba(255,255,255,0.6);
+            background: rgba(139, 105, 20, 0.4);
         }
 
-        /* --- ГЛАВНОЕ МЕНЮ (после входа) --- */
+        /* --- ИГРОВОЙ МИР (СОЛНЕЧНЫЙ ГОРОД) --- */
+        .world-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: rgba(30, 20, 15, 0.5);
+            backdrop-filter: blur(8px);
+            border-radius: 30px;
+            border: 3px solid #8b6914;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-canvas {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .player {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ffd700, 0 4px 0 #8b6508;
+            border: 2px solid #ffec8b;
+            transform: translate(-50%, -50%);
+            transition: left 0.05s linear, top 0.05s linear;
+            z-index: 20;
+        }
+
+        .gazebo {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            background: rgba(139, 90, 43, 0.6);
+            border-radius: 40px 40px 20px 20px;
+            border: 2px solid #8b6914;
+            box-shadow: 0 5px 0 #5a3a1a, inset 0 -10px 20px rgba(0,0,0,0.2);
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            z-index: 15;
+        }
+        .gazebo:hover {
+            background: rgba(139, 90, 43, 0.8);
+            box-shadow: 0 0 20px #8b6914, 0 5px 0 #5a3a1a;
+        }
+        .gazebo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+        }
+        .gazebo-name {
+            font-size: 0.7rem;
+            color: #ffecb3;
+            text-shadow: 0 1px 3px black;
+            font-weight: 600;
+        }
+
+        .interact-hint {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #ffd700;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 1px solid #ffd700;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+            z-index: 25;
+        }
+        .interact-hint.visible {
+            opacity: 1;
+        }
+
+        .gazebo-menu {
+            padding: 20px;
+        }
+        .gazebo-menu h3 {
+            color: #3a1a0a;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+            border-bottom: 2px solid #8b6914;
+            padding-bottom: 10px;
+        }
+        .gazebo-menu-btn {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: linear-gradient(145deg, #c9a96b, #a8844a);
+            border: 2px solid #8b6914;
+            border-radius: 20px;
+            color: #1a0a05;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #5a3a1a;
+            transition: all 0.1s;
+            font-family: 'Cinzel', serif;
+        }
+        .gazebo-menu-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #5a3a1a;
+        }
+
+        /* --- ГЛАВНОЕ МЕНЮ --- */
         .main-menu-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             display: none; justify-content: center; align-items: center; z-index: 500;
@@ -143,13 +317,13 @@
             display: flex;
         }
         .main-menu-card {
-            background: rgba(255, 245, 250, 0.5);
-            backdrop-filter: blur(20px);
-            border-radius: 60px;
+            background: rgba(245, 230, 208, 0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
             padding: 50px 60px;
             text-align: center;
-            border: 3px solid rgba(255, 255, 255, 0.7);
-            box-shadow: 0 30px 60px rgba(240, 98, 146, 0.2);
+            border: 3px solid #8b6914;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(139, 105, 20, 0.2);
             transform: scale(0.9);
             opacity: 0;
             animation: menuAppear 0.4s ease forwards;
@@ -158,33 +332,35 @@
             to { transform: scale(1); opacity: 1; }
         }
         .main-menu-title {
-            font-size: 3rem;
-            color: #4a0a1a;
+            font-size: 3.5rem;
+            color: #3a1a0a;
             margin-bottom: 40px;
-            text-shadow: 0 3px 10px rgba(255,255,255,0.8);
+            text-shadow: 0 3px 5px rgba(255,215,0,0.3);
+            font-family: 'Cinzel', serif;
         }
         .main-menu-btn {
             width: 100%;
             padding: 20px 40px;
             font-size: 1.5rem;
             font-weight: 600;
-            color: #4a0a1a;
-            background: rgba(255, 255, 255, 0.6);
-            border: 2px solid white;
-            border-radius: 60px;
+            color: #2a1505;
+            background: linear-gradient(145deg, #d4b896, #c4a57a);
+            border: 2px solid #8b6914;
+            border-radius: 50px;
             margin-bottom: 20px;
             cursor: pointer;
-            box-shadow: 0 6px 0 #8b2540;
+            box-shadow: 0 6px 0 #6b4a1a;
             transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Cinzel', serif;
         }
         .main-menu-btn:active {
             transform: translateY(4px);
-            box-shadow: 0 2px 0 #8b2540;
+            box-shadow: 0 2px 0 #6b4a1a;
         }
         .main-menu-btn.logout {
-            background: rgba(139, 37, 64, 0.3);
-            color: #4a0a1a;
-            box-shadow: 0 6px 0 #6b1a2a;
+            background: linear-gradient(145deg, #a07050, #8b5a3a);
+            color: #ffe8c0;
+            box-shadow: 0 6px 0 #5a3a1a;
         }
 
         /* --- ВЕРХНЯЯ ПАНЕЛЬ С ВАЛЮТАМИ --- */
@@ -195,20 +371,21 @@
             display: flex;
             gap: 20px;
             z-index: 100;
-            background: rgba(255, 245, 250, 0.5);
-            backdrop-filter: blur(10px);
+            background: rgba(245, 230, 208, 0.7);
+            backdrop-filter: blur(8px);
             padding: 10px 20px;
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 40px;
+            border: 2px solid #8b6914;
         }
 
         .currency-item {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #4a0a1a;
+            color: #2a1505;
             font-weight: 600;
             font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
         }
 
         .currency-item span {
@@ -222,27 +399,27 @@
             right: 20px;
             width: 55px;
             height: 55px;
-            background: rgba(255, 245, 250, 0.7);
-            backdrop-filter: blur(10px);
+            background: rgba(245, 230, 208, 0.8);
+            backdrop-filter: blur(8px);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 6px 0 #8b2540, 0 8px 15px rgba(0,0,0,0.1);
+            border: 2px solid #8b6914;
+            box-shadow: 0 6px 0 #5a3a1a, 0 8px 15px rgba(0,0,0,0.2);
             cursor: pointer;
             transition: all 0.2s ease;
             z-index: 100;
-            color: #4a0a1a;
+            color: #3a1a0a;
         }
 
         .account-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 9px 0 #8b2540, 0 12px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 9px 0 #5a3a1a, 0 12px 20px rgba(0,0,0,0.2);
         }
 
-        /* --- БОКОВАЯ ПАНЕЛЬ НАВИГАЦИИ --- */
+        /* --- БОКОВАЯ ПАНЕЛЬ НАВИГАЦИИ (СЛЕВА) --- */
         .nav-sidebar {
             position: fixed;
             left: 20px;
@@ -257,49 +434,50 @@
         .nav-btn {
             width: 55px;
             height: 55px;
-            background: rgba(255, 245, 250, 0.7);
-            backdrop-filter: blur(10px);
+            background: rgba(245, 230, 208, 0.8);
+            backdrop-filter: blur(8px);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.8rem;
-            border: 2px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 6px 0 #8b2540, 0 8px 15px rgba(0,0,0,0.1);
+            border: 2px solid #8b6914;
+            box-shadow: 0 6px 0 #5a3a1a, 0 8px 15px rgba(0,0,0,0.2);
             cursor: pointer;
             transition: all 0.2s ease;
             position: relative;
-            color: #4a0a1a;
+            color: #3a1a0a;
         }
 
         .nav-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 9px 0 #8b2540, 0 12px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 9px 0 #5a3a1a, 0 12px 20px rgba(0,0,0,0.2);
         }
 
         .nav-btn.active {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 245, 220, 0.95);
             transform: translateY(2px);
-            box-shadow: 0 4px 0 #8b2540, 0 6px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 0 #5a3a1a, 0 6px 10px rgba(0,0,0,0.2);
         }
 
         .nav-tooltip {
             position: absolute;
             left: 70px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(245, 230, 208, 0.95);
             backdrop-filter: blur(5px);
             padding: 8px 16px;
             border-radius: 30px;
             font-size: 0.9rem;
             font-weight: 600;
-            color: #4a0a1a;
+            color: #3a1a0a;
             white-space: nowrap;
             opacity: 0;
             visibility: hidden;
             transition: 0.2s;
-            border: 1px solid white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 1px solid #8b6914;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             pointer-events: none;
+            font-family: 'Cinzel', serif;
         }
 
         .nav-btn:hover .nav-tooltip {
@@ -308,11 +486,78 @@
             left: 75px;
         }
 
+        /* --- ПАНЕЛЬ НАСТРОЕК (СПРАВА) --- */
+        .settings-sidebar {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .settings-btn {
+            width: 55px;
+            height: 55px;
+            background: rgba(245, 230, 208, 0.8);
+            backdrop-filter: blur(8px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid #8b6914;
+            box-shadow: 0 6px 0 #5a3a1a, 0 8px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: #3a1a0a;
+        }
+
+        .settings-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0 #5a3a1a, 0 12px 20px rgba(0,0,0,0.2);
+        }
+
+        .settings-btn.active {
+            background: rgba(255, 245, 220, 0.95);
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 #5a3a1a, 0 6px 10px rgba(0,0,0,0.2);
+        }
+
+        .settings-tooltip {
+            position: absolute;
+            right: 70px;
+            background: rgba(245, 230, 208, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #3a1a0a;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            border: 1px solid #8b6914;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: none;
+            font-family: 'Cinzel', serif;
+        }
+
+        .settings-btn:hover .settings-tooltip {
+            opacity: 1;
+            visibility: visible;
+            right: 75px;
+        }
+
         /* --- АНИМАЦИЯ ЗВЕЗДЫ --- */
         .star-animation-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
@@ -351,12 +596,13 @@
             bottom: -50px;
             left: 50%;
             transform: translateX(-50%);
-            color: white;
+            color: #ffecb3;
             font-size: 1.5rem;
             text-shadow: 0 2px 10px rgba(100, 181, 246, 0.8);
             font-weight: 500;
             letter-spacing: 3px;
             white-space: nowrap;
+            font-family: 'Cinzel', serif;
         }
         .star-text.gold { text-shadow: 0 2px 15px #ffd54f; }
 
@@ -364,26 +610,27 @@
             position: absolute;
             bottom: 30px;
             right: 30px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.4);
             backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 2px solid #8b6914;
             border-radius: 40px;
             padding: 12px 24px;
-            color: white;
+            color: #ffecb3;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             z-index: 2010;
             transition: 0.2s;
+            font-family: 'Cinzel', serif;
         }
         .skip-animation-btn:hover {
-            background: rgba(255,255,255,0.3);
+            background: rgba(0,0,0,0.6);
         }
 
         /* --- ЭКРАН ВХОДА --- */
         .login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px);
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(10px);
             display: flex; justify-content: center; align-items: center; z-index: 1000;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -393,9 +640,10 @@
         }
         .login-screen.hidden { display: none; }
         .login-card {
-            background: linear-gradient(145deg, #fff0f5, #fce4ec);
-            border-radius: 60px; padding: 45px 40px; max-width: 420px; width: 90%;
-            text-align: center; border: 3px solid rgba(255, 255, 255, 0.8);
+            background: linear-gradient(145deg, #f5e6d0, #e8d4b8);
+            border-radius: 40px; padding: 45px 40px; max-width: 420px; width: 90%;
+            text-align: center; border: 3px solid #8b6914;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
             transform: scale(0.9);
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -404,21 +652,22 @@
         }
         .login-avatar {
             width: 100px; height: 100px; margin: 0 auto 20px;
-            background: radial-gradient(circle at 30% 30%, #ffe082, #ffb74d);
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 3.5rem; box-shadow: 0 8px 0 #8b2540; border: 3px solid white;
+            font-size: 3.5rem; box-shadow: 0 8px 0 #6b4a1a; border: 3px solid #8b6914;
         }
-        .login-title { font-size: 2.2rem; color: #4a0a1a; margin-bottom: 10px; }
-        .login-subtitle { color: #6b1a2a; margin-bottom: 30px; }
+        .login-title { font-size: 2.5rem; color: #3a1a0a; margin-bottom: 10px; font-family: 'Cinzel', serif; }
+        .login-subtitle { color: #5a3a1a; margin-bottom: 30px; font-family: 'Cormorant Garamond', serif; }
         .login-btn {
-            width: 100%; background: linear-gradient(145deg, #f8bbd0, #f48fb1);
-            border: none; border-radius: 50px; padding: 18px; color: white;
+            width: 100%; background: linear-gradient(145deg, #c9a96b, #a8844a);
+            border: none; border-radius: 50px; padding: 18px; color: #1a0a05;
             font-size: 1.3rem; font-weight: 600; cursor: pointer;
-            box-shadow: 0 6px 0 #8b2540; border: 1.5px solid white; margin-bottom: 20px;
+            box-shadow: 0 6px 0 #6b4a1a; border: 2px solid #8b6914; margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
+            font-family: 'Cinzel', serif;
         }
         .error-message { color: #8b0000; font-size: 0.9rem; margin-top: 10px; }
 
@@ -426,9 +675,10 @@
         .game-wrapper {
             position: relative;
             z-index: 10;
-            max-width: 580px;
+            max-width: 900px;
             width: 100%;
-            margin-left: 60px;
+            margin-left: 80px;
+            margin-right: 80px;
             display: none;
         }
         .game-wrapper.visible { display: block; }
@@ -443,23 +693,24 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            background: rgba(255, 245, 250, 0.5);
-            backdrop-filter: blur(10px);
+            background: rgba(245, 230, 208, 0.7);
+            backdrop-filter: blur(8px);
             padding: 8px 18px 8px 12px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 40px;
+            border: 2px solid #8b6914;
         }
         .profile-avatar {
-            width: 40px; height: 40px; background: radial-gradient(circle at 30% 30%, #ffe082, #ffb74d);
+            width: 40px; height: 40px; background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; border: 2px solid white;
+            font-size: 1.5rem; border: 2px solid #8b6914;
         }
-        .profile-name { color: #4a0a1a; font-weight: 600; font-size: 1rem; }
+        .profile-name { color: #2a1505; font-weight: 600; font-size: 1rem; font-family: 'Cinzel', serif; }
         .logout-btn {
-            background: rgba(255, 245, 250, 0.5); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.6); border-radius: 40px;
-            padding: 8px 18px; color: #4a0a1a; font-weight: 600; cursor: pointer;
+            background: rgba(245, 230, 208, 0.7); backdrop-filter: blur(8px);
+            border: 2px solid #8b6914; border-radius: 40px;
+            padding: 8px 18px; color: #3a1a0a; font-weight: 600; cursor: pointer;
             margin-left: 10px;
+            font-family: 'Cinzel', serif;
         }
 
         /* --- ПЕРЕКЛЮЧАТЕЛЬ ОСНОВНЫХ ЭКРАНОВ --- */
@@ -473,87 +724,23 @@
             opacity: 1;
         }
 
-        /* --- КАРТА МИРА --- */
-        .world-map {
-            background: rgba(255, 245, 250, 0.3);
-            backdrop-filter: blur(15px);
-            border-radius: 48px;
-            padding: 30px;
-            min-height: 500px;
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .map-title {
-            font-size: 2rem;
-            color: #4a0a1a;
-            text-align: center;
-            margin-bottom: 30px;
-            text-shadow: 0 2px 5px rgba(255,255,255,0.5);
-        }
-
-        .map-locations {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .map-location {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 20px 25px;
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .map-location:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 9px 0 rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0,0,0,0.1);
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .location-icon {
-            font-size: 3rem;
-            width: 60px;
-            text-align: center;
-        }
-
-        .location-info h3 {
-            font-size: 1.5rem;
-            color: #4a0a1a;
-            margin-bottom: 5px;
-        }
-
-        .location-info p {
-            color: #6b1a2a;
-            font-size: 0.9rem;
-        }
-
         /* --- ГАЧА ЭКРАН --- */
         .gacha-screen .game-card {
-            background: rgba(255, 245, 250, 0.35);
-            backdrop-filter: blur(20px);
-            border-radius: 48px;
+            background: rgba(245, 230, 208, 0.5);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
             padding: 28px 24px 32px;
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 25px 45px rgba(240, 98, 146, 0.15);
+            border: 2px solid #8b6914;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .shimmer-banner {
-            background: linear-gradient(110deg, rgba(255,220,240,0.5), rgba(255,240,245,0.8), rgba(255,200,220,0.6), rgba(255,235,245,0.85), rgba(255,220,240,0.5));
+            background: linear-gradient(110deg, rgba(201, 169, 107, 0.5), rgba(232, 212, 184, 0.8), rgba(201, 169, 107, 0.6), rgba(232, 212, 184, 0.9), rgba(201, 169, 107, 0.5));
             background-size: 300% 100%;
-            border-radius: 60px;
+            border-radius: 50px;
             padding: 16px 22px;
             margin-bottom: 24px;
-            border: 1px solid rgba(255,255,255,0.7);
+            border: 2px solid #8b6914;
             animation: shimmerMove 8s ease-in-out infinite;
         }
         @keyframes shimmerMove {
@@ -565,109 +752,122 @@
         .banner-left { display: flex; align-items: center; gap: 15px; }
         .character-icon {
             width: 55px; height: 55px;
-            background: radial-gradient(circle at 30% 30%, #ffe0f0, #f8bbd0);
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
             border-radius: 30px; display: flex; align-items: center; justify-content: center;
-            font-size: 36px; box-shadow: 0 5px 0 #8b2540;
-            border: 2px solid white; transform: rotate(-5deg);
+            font-size: 36px; box-shadow: 0 5px 0 #6b4a1a;
+            border: 2px solid #8b6914; transform: rotate(-5deg);
         }
         .banner-text h3 {
             font-size: 1.6rem;
-            font-weight: 500;
-            color: #4a0a1a;
+            font-weight: 600;
+            color: #2a1505;
+            font-family: 'Cinzel', serif;
         }
         .banner-sub {
             font-size: 0.9rem;
-            color: #6b1a2a;
-            opacity: 0.8;
+            color: #4a2a1a;
+            opacity: 0.9;
+            font-family: 'Cormorant Garamond', serif;
         }
         .time-badge {
-            background: rgba(255, 255, 255, 0.7); padding: 8px 14px; border-radius: 40px;
-            font-size: 0.9rem; font-weight: 600; color: #4a0a1a;
+            background: rgba(245, 230, 208, 0.8); padding: 8px 14px; border-radius: 40px;
+            font-size: 0.9rem; font-weight: 600; color: #3a1a0a;
+            border: 1px solid #8b6914;
+            font-family: 'Cinzel', serif;
         }
 
         .pity-glass-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .pity-item {
-            background: rgba(255, 245, 250, 0.4); backdrop-filter: blur(12px);
-            border-radius: 28px; padding: 14px 6px; text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            background: rgba(245, 230, 208, 0.5); backdrop-filter: blur(8px);
+            border-radius: 30px; padding: 14px 6px; text-align: center;
+            border: 2px solid #8b6914;
         }
         .pity-label {
             font-size: 0.8rem;
             text-transform: uppercase;
-            color: #4a0a1a;
+            color: #3a1a0a;
             opacity: 0.9;
+            font-family: 'Cinzel', serif;
         }
         .pity-number {
             font-size: 2.5rem;
-            font-weight: 300;
-            color: #4a0a1a;
+            font-weight: 500;
+            color: #2a1505;
+            font-family: 'Cinzel', serif;
         }
         .pity-max {
             font-size: 0.8rem;
-            color: #6b1a2a;
+            color: #5a3a1a;
         }
         .fifty-badge {
-            background: rgba(255, 235, 245, 0.5); border-radius: 40px;
+            background: rgba(232, 212, 184, 0.6); border-radius: 40px;
             padding: 4px 10px; font-size: 0.9rem; margin-top: 5px;
-            color: #4a0a1a;
+            color: #3a1a0a;
         }
 
         .currency-row { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
         .currency-card {
-            flex: 1; background: rgba(255, 255, 255, 0.4);
+            flex: 1; background: rgba(245, 230, 208, 0.5);
             backdrop-filter: blur(8px); border-radius: 50px; padding: 12px 16px;
-            display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.7);
+            display: flex; align-items: center; gap: 8px; border: 2px solid #8b6914;
         }
         .currency-icon { font-size: 2rem; }
         .currency-value {
             font-size: 1.8rem;
-            font-weight: 400;
-            color: #4a0a1a;
+            font-weight: 500;
+            color: #2a1505;
+            font-family: 'Cinzel', serif;
         }
 
         .wish-primary {
-            width: 100%; background: linear-gradient(145deg, #f8bbd0, #f48fb1, #f06292);
+            width: 100%; background: linear-gradient(145deg, #c9a96b, #a8844a);
             border: none; border-radius: 60px; padding: 18px 20px;
-            color: white; font-size: 1.5rem; font-weight: 600;
-            box-shadow: 0 12px 0 #8b2540; cursor: pointer;
+            color: #1a0a05; font-size: 1.5rem; font-weight: 600;
+            box-shadow: 0 8px 0 #6b4a1a; cursor: pointer;
             margin-bottom: 12px;
+            border: 2px solid #8b6914;
+            font-family: 'Cinzel', serif;
         }
-        .wish-primary:active { transform: translateY(8px); box-shadow: 0 4px 0 #8b2540; }
+        .wish-primary:active { transform: translateY(6px); box-shadow: 0 2px 0 #6b4a1a; }
         .wish-primary:disabled { opacity: 0.5; transform: none; }
 
         .button-group { display: flex; gap: 12px; }
         .btn-secondary {
-            flex: 1; background: rgba(255, 240, 245, 0.6);
-            border: 1.5px solid white; border-radius: 50px; padding: 14px 0;
-            font-size: 1.1rem; font-weight: 600; color: #4a0a1a;
-            box-shadow: 0 6px 0 #8b2540; cursor: pointer;
+            flex: 1; background: rgba(245, 230, 208, 0.7);
+            border: 2px solid #8b6914; border-radius: 50px; padding: 14px 0;
+            font-size: 1.1rem; font-weight: 600; color: #3a1a0a;
+            box-shadow: 0 6px 0 #6b4a1a; cursor: pointer;
+            font-family: 'Cinzel', serif;
         }
 
         .footer-actions { display: flex; gap: 8px; margin-top: 10px; }
         .btn-small {
-            background: rgba(255, 245, 250, 0.4); border: 1px solid white;
-            color: #4a0a1a; padding: 10px; border-radius: 30px;
+            background: rgba(245, 230, 208, 0.5); border: 2px solid #8b6914;
+            color: #3a1a0a; padding: 10px; border-radius: 30px;
             font-size: 0.9rem; cursor: pointer; flex: 1;
+            font-family: 'Cinzel', serif;
         }
 
         .banner-switch { display: flex; gap: 10px; margin-bottom: 15px; }
         .banner-tab {
             flex: 1; padding: 12px; border-radius: 30px;
-            background: rgba(255,255,255,0.3); color: #4a0a1a;
+            background: rgba(245, 230, 208, 0.4); color: #3a1a0a;
             font-weight: 600; cursor: pointer; text-align: center;
+            border: 2px solid #8b6914;
+            font-family: 'Cinzel', serif;
         }
         .banner-tab.active {
-            background: rgba(255,255,255,0.7);
-            box-shadow: 0 4px 0 #8b2540;
+            background: rgba(245, 230, 208, 0.9);
+            box-shadow: 0 4px 0 #6b4a1a;
         }
 
         /* --- ЗАДАНИЯ (ДНЕВНИК) --- */
         .tasks-screen {
-            background: rgba(255, 245, 250, 0.25);
-            backdrop-filter: blur(20px);
-            border-radius: 48px;
+            background: rgba(245, 230, 208, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
             padding: 28px 24px;
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            border: 2px solid #8b6914;
             min-height: 500px;
         }
 
@@ -680,16 +880,17 @@
             flex: 1;
             padding: 12px;
             border-radius: 30px;
-            background: rgba(255,255,255,0.3);
-            color: #4a0a1a;
+            background: rgba(245, 230, 208, 0.4);
+            color: #3a1a0a;
             font-weight: 600;
             cursor: pointer;
             text-align: center;
-            border: 1.5px solid rgba(255,255,255,0.5);
+            border: 2px solid #8b6914;
+            font-family: 'Cinzel', serif;
         }
         .task-tab.active {
-            background: rgba(255,255,255,0.7);
-            box-shadow: 0 4px 0 #8b2540;
+            background: rgba(245, 230, 208, 0.8);
+            box-shadow: 0 4px 0 #6b4a1a;
         }
 
         .tasks-list {
@@ -698,18 +899,18 @@
             gap: 12px;
         }
         .task-item {
-            background: rgba(255,255,255,0.4);
+            background: rgba(245, 230, 208, 0.5);
             backdrop-filter: blur(5px);
             border-radius: 25px;
             padding: 15px 20px;
             display: flex;
             align-items: center;
             gap: 15px;
-            border: 1px solid rgba(255,255,255,0.6);
+            border: 1px solid #8b6914;
         }
         .task-item.completed {
             opacity: 0.7;
-            background: rgba(200, 230, 200, 0.4);
+            background: rgba(180, 150, 120, 0.4);
         }
         .task-icon {
             font-size: 1.8rem;
@@ -721,74 +922,78 @@
         }
         .task-name {
             font-weight: 600;
-            color: #4a0a1a;
+            color: #2a1505;
             margin-bottom: 5px;
+            font-family: 'Cinzel', serif;
         }
         .task-progress {
             font-size: 0.8rem;
-            color: #6b1a2a;
+            color: #4a2a1a;
         }
         .progress-bar {
             width: 100%;
             height: 6px;
-            background: rgba(255,255,255,0.4);
+            background: rgba(139, 105, 20, 0.2);
             border-radius: 3px;
             margin-top: 5px;
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #8b2540, #6b1a2a);
+            background: linear-gradient(90deg, #a8844a, #8b6914);
             border-radius: 3px;
             transition: width 0.3s;
         }
         .task-reward {
             font-weight: 600;
-            color: #8b2540;
+            color: #8b6914;
             font-size: 1.1rem;
         }
         .claim-btn {
-            background: linear-gradient(145deg, #8b2540, #6b1a2a);
+            background: linear-gradient(145deg, #a8844a, #8b6914);
             border: none;
             border-radius: 30px;
             padding: 8px 16px;
-            color: white;
+            color: #ffe8c0;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 0 #4a0a1a;
+            box-shadow: 0 4px 0 #5a3a1a;
             font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
         }
 
         /* Галерея */
         .gallery-screen {
-            background: rgba(255, 245, 250, 0.25);
-            backdrop-filter: blur(20px);
-            border-radius: 48px;
+            background: rgba(245, 230, 208, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
             padding: 28px 24px;
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            border: 2px solid #8b6914;
             min-height: 500px;
             max-height: 600px;
             overflow-y: auto;
         }
         .gallery-section h3 {
-            color: #4a0a1a;
+            color: #3a1a0a;
             margin: 20px 0 15px;
+            font-family: 'Cinzel', serif;
         }
         .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .gallery-item {
-            background: rgba(255,255,255,0.4);
+            background: rgba(245, 230, 208, 0.5);
             border-radius: 20px;
             padding: 15px 5px;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
-            color: #4a0a1a;
+            color: #3a1a0a;
             cursor: pointer;
             transition: transform 0.2s;
+            border: 1px solid #8b6914;
         }
         .gallery-item:hover {
             transform: scale(1.05);
-            background: rgba(255,255,255,0.6);
+            background: rgba(245, 230, 208, 0.7);
         }
         .gallery-item.locked { opacity: 0.5; }
         .gallery-lock { position: absolute; top: 5px; right: 8px; }
@@ -802,11 +1007,11 @@
             align-items: center;
             gap: 12px;
             padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.4);
+            background: rgba(245, 230, 208, 0.5);
             border-radius: 40px;
             border-left: 8px solid;
             margin-bottom: 8px;
-            color: #4a0a1a;
+            color: #3a1a0a;
         }
 
         /* Пагинация истории */
@@ -818,45 +1023,46 @@
             margin-top: 20px;
         }
         .history-page-btn {
-            background: rgba(255, 240, 245, 0.6);
-            border: 1.5px solid white;
+            background: rgba(245, 230, 208, 0.7);
+            border: 2px solid #8b6914;
             border-radius: 30px;
             padding: 10px 20px;
-            color: #4a0a1a;
+            color: #3a1a0a;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 0 #8b2540;
+            box-shadow: 0 4px 0 #6b4a1a;
             transition: all 0.1s;
             font-size: 0.9rem;
+            font-family: 'Cinzel', serif;
         }
         .history-page-btn:active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 #8b2540;
+            box-shadow: 0 2px 0 #6b4a1a;
         }
         .history-page-btn:disabled {
             opacity: 0.4;
             cursor: not-allowed;
             transform: none;
-            box-shadow: 0 4px 0 #8b2540;
+            box-shadow: 0 4px 0 #6b4a1a;
         }
         .history-page-indicator {
-            color: #4a0a1a;
+            color: #3a1a0a;
             font-weight: 600;
             font-size: 1rem;
             padding: 8px 15px;
-            background: rgba(255,255,255,0.4);
+            background: rgba(245, 230, 208, 0.5);
             border-radius: 30px;
             backdrop-filter: blur(5px);
         }
 
         /* --- МОДАЛКА ПРЕДМЕТА ГАЛЕРЕИ --- */
         .gallery-item-modal .modal-content {
-            max-width: 550px;
+            max-width: 650px;
             padding: 30px;
         }
         .item-detail-container {
             display: flex;
-            gap: 25px;
+            gap: 30px;
             align-items: flex-start;
         }
         .item-detail-left {
@@ -866,58 +1072,67 @@
         }
         .item-detail-emoji {
             font-size: 5rem;
-            background: rgba(255,255,255,0.4);
+            background: rgba(245, 230, 208, 0.5);
             padding: 20px;
             border-radius: 30px;
-            border: 2px solid white;
+            border: 2px solid #8b6914;
         }
         .item-detail-right {
             flex: 1;
             text-align: left;
-            max-height: 350px;
+            max-height: 400px;
             overflow-y: auto;
-            padding-right: 10px;
+            padding-right: 15px;
+        }
+        .item-detail-right::-webkit-scrollbar {
+            width: 5px;
+        }
+        .item-detail-right::-webkit-scrollbar-thumb {
+            background: #8b6914;
+            border-radius: 5px;
         }
         .item-detail-name {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: 600;
-            color: #4a0a1a;
+            color: #2a1505;
             margin-bottom: 5px;
+            font-family: 'Cinzel', serif;
         }
         .item-detail-stars {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             letter-spacing: 3px;
             color: #ffb300;
             margin-bottom: 15px;
         }
         .item-detail-lore {
-            color: #4a0a1a;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            color: #3a1a0a;
+            font-size: 1rem;
+            line-height: 1.7;
             margin-bottom: 20px;
             padding: 15px;
-            background: rgba(255,255,255,0.3);
+            background: rgba(245, 230, 208, 0.4);
             border-radius: 20px;
             word-wrap: break-word;
+            border: 1px solid #8b6914;
         }
         .constellation-container {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: flex-start;
             margin-top: 15px;
             flex-wrap: wrap;
         }
         .constellation-shard {
-            width: 45px;
-            height: 45px;
-            background: rgba(100, 100, 100, 0.3);
+            width: 50px;
+            height: 50px;
+            background: rgba(100, 80, 60, 0.3);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            border: 2px solid #888;
-            color: #888;
+            font-size: 1.8rem;
+            border: 2px solid #6b5a4a;
+            color: #6b5a4a;
             position: relative;
             cursor: pointer;
             transition: all 0.2s;
@@ -933,9 +1148,9 @@
             background: rgba(255, 215, 0, 0.5);
         }
         .constellation-shard.claimed {
-            background: rgba(139, 37, 64, 0.5);
-            border-color: #8b2540;
-            color: #8b2540;
+            background: rgba(139, 100, 50, 0.5);
+            border-color: #a8844a;
+            color: #a8844a;
             cursor: default;
             opacity: 0.7;
         }
@@ -944,10 +1159,10 @@
             font-size: 1rem;
             bottom: -5px;
             right: -5px;
-            background: #666;
+            background: #5a4a3a;
             border-radius: 50%;
             padding: 3px;
-            color: white;
+            color: #ffecb3;
         }
         .constellation-shard.unlocked .lock-icon,
         .constellation-shard.claimed .lock-icon {
@@ -967,7 +1182,7 @@
             gap: 15px;
         }
         .shop-item-card {
-            background: rgba(255,255,255,0.4);
+            background: rgba(245, 230, 208, 0.5);
             backdrop-filter: blur(5px);
             border-radius: 25px;
             padding: 20px 15px;
@@ -975,29 +1190,30 @@
             flex-direction: column;
             align-items: center;
             gap: 10px;
-            border: 1.5px solid white;
+            border: 2px solid #8b6914;
             cursor: pointer;
             transition: all 0.2s;
         }
         .shop-item-card:hover {
             transform: translateY(-3px);
-            background: rgba(255,255,255,0.6);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            background: rgba(245, 230, 208, 0.7);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
         }
         .shop-item-emoji {
             font-size: 3rem;
         }
         .shop-item-name {
             font-weight: 600;
-            color: #4a0a1a;
+            color: #2a1505;
             font-size: 1rem;
             text-align: center;
+            font-family: 'Cinzel', serif;
         }
         .shop-item-price {
             display: flex;
             align-items: center;
             gap: 5px;
-            color: #8b2540;
+            color: #8b6914;
             font-weight: 600;
         }
 
@@ -1011,66 +1227,62 @@
             justify-content: space-between;
             margin-top: 20px;
             padding: 15px;
-            background: rgba(255,255,255,0.3);
+            background: rgba(245, 230, 208, 0.4);
             border-radius: 20px;
-        }
-        .buy-slider {
-            flex: 1;
-            margin: 0 15px;
-        }
-        .buy-slider input {
-            width: 100%;
-            accent-color: #8b2540;
+            border: 1px solid #8b6914;
         }
         .buy-quantity {
             font-weight: 600;
-            color: #4a0a1a;
+            color: #3a1a0a;
             min-width: 50px;
             text-align: center;
+            font-size: 1.2rem;
         }
         .buy-total {
             font-weight: 600;
-            color: #8b2540;
+            color: #8b6914;
             font-size: 1.2rem;
         }
         .buy-btn {
-            background: linear-gradient(145deg, #8b2540, #6b1a2a);
+            background: linear-gradient(145deg, #a8844a, #8b6914);
             border: none;
             border-radius: 40px;
             padding: 14px 30px;
-            color: white;
+            color: #ffe8c0;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 0 #4a0a1a;
+            box-shadow: 0 4px 0 #5a3a1a;
             width: 100%;
             margin-top: 15px;
             font-size: 1.1rem;
+            font-family: 'Cinzel', serif;
         }
 
         .modal-item-emoji { font-size: 6rem; margin: 20px 0 10px; }
-        .modal-item-name { font-size: 2rem; font-weight: 600; color: #4a0a1a; }
+        .modal-item-name { font-size: 2rem; font-weight: 600; color: #3a1a0a; font-family: 'Cinzel', serif; }
         .modal-stars { font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 20px; }
         .modal-rarity-badge {
             display: inline-block; padding: 8px 25px; border-radius: 40px;
             font-weight: 600; margin-bottom: 20px;
         }
-        .rarity-5-badge { background: linear-gradient(145deg, #ffd54f, #ffb300); color: #4a2000; }
+        .rarity-5-badge { background: linear-gradient(145deg, #ffd54f, #ffb300); color: #2a1505; }
 
         .modal-nav {
             display: flex; justify-content: center; gap: 30px; margin-top: 20px;
         }
         .nav-arrow {
-            width: 50px; height: 50px; background: rgba(255,255,255,0.5);
+            width: 50px; height: 50px; background: rgba(245, 230, 208, 0.6);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; cursor: pointer; color: #4a0a1a;
+            font-size: 2rem; cursor: pointer; color: #3a1a0a;
+            border: 2px solid #8b6914;
         }
         .nav-arrow.disabled { opacity: 0.3; pointer-events: none; }
-        .item-counter { color: #4a0a1a; font-weight: 600; }
+        .item-counter { color: #3a1a0a; font-weight: 600; }
 
         .items-list-modal { max-width: 500px; max-height: 70vh; overflow-y: auto; padding: 30px 25px; }
         .items-list-item {
             display: flex; align-items: center; gap: 15px; padding: 15px 20px;
-            background: rgba(255,255,255,0.5); border-radius: 20px;
+            background: rgba(245, 230, 208, 0.6); border-radius: 20px;
             border-left: 8px solid; margin-bottom: 10px;
         }
         .items-list-item.rarity-5 { border-left-color: #ffb74d; }
@@ -1091,13 +1303,13 @@
         .account-avatar-large {
             width: 100px;
             height: 100px;
-            background: radial-gradient(circle at 30% 30%, #ffe082, #ffb74d);
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 3.5rem;
-            border: 3px solid white;
+            border: 3px solid #8b6914;
             margin-bottom: 10px;
         }
         .avatar-selector {
@@ -1113,72 +1325,74 @@
         .avatar-option {
             width: 50px;
             height: 50px;
-            background: rgba(255,255,255,0.5);
+            background: rgba(245, 230, 208, 0.6);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2rem;
-            border: 2px solid white;
+            border: 2px solid #8b6914;
             cursor: pointer;
             transition: all 0.2s;
         }
         .avatar-option:hover {
             transform: scale(1.1);
-            background: rgba(255,255,255,0.8);
+            background: rgba(245, 230, 208, 0.9);
         }
         .avatar-option.selected {
-            border: 3px solid #8b2540;
-            box-shadow: 0 0 15px #8b2540;
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 15px #ffd700;
         }
         .account-input {
             width: 100%;
             padding: 12px 16px;
             font-size: 1rem;
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            border: 2px solid #8b6914;
             border-radius: 30px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(245, 230, 208, 0.8);
             margin-bottom: 10px;
             outline: none;
-            color: #4a0a1a;
+            color: #2a1505;
+            font-family: 'Cormorant Garamond', serif;
         }
         .account-textarea {
             width: 100%;
             padding: 12px 16px;
             font-size: 0.9rem;
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            border: 2px solid #8b6914;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(245, 230, 208, 0.8);
             margin-bottom: 15px;
             outline: none;
-            color: #4a0a1a;
+            color: #2a1505;
             resize: vertical;
             min-height: 80px;
-            font-family: inherit;
+            font-family: 'Cormorant Garamond', serif;
         }
         .save-account-btn {
             width: 100%;
-            background: linear-gradient(145deg, #8b2540, #6b1a2a);
+            background: linear-gradient(145deg, #a8844a, #8b6914);
             border: none;
             border-radius: 40px;
             padding: 14px;
-            color: white;
+            color: #ffe8c0;
             font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 0 #4a0a1a;
+            box-shadow: 0 4px 0 #5a3a1a;
+            font-family: 'Cinzel', serif;
         }
 
         /* --- НАСТРОЙКИ --- */
         .settings-screen {
-            background: rgba(255, 245, 250, 0.25);
-            backdrop-filter: blur(20px);
-            border-radius: 48px;
+            background: rgba(245, 230, 208, 0.4);
+            backdrop-filter: blur(15px);
+            border-radius: 40px;
             padding: 28px 24px;
-            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            border: 2px solid #8b6914;
             min-height: 400px;
         }
         .settings-option {
-            background: rgba(255,255,255,0.4);
+            background: rgba(245, 230, 208, 0.5);
             backdrop-filter: blur(5px);
             border-radius: 25px;
             padding: 20px;
@@ -1186,31 +1400,42 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border: 1px solid white;
+            border: 1px solid #8b6914;
         }
         .settings-option label {
-            color: #4a0a1a;
+            color: #2a1505;
             font-weight: 600;
             font-size: 1.1rem;
+            font-family: 'Cinzel', serif;
         }
         .settings-option input[type="checkbox"] {
             width: 50px;
             height: 25px;
-            accent-color: #8b2540;
+            accent-color: #8b6914;
         }
         .settings-option select {
             padding: 8px 15px;
             border-radius: 30px;
-            border: 1px solid white;
-            background: rgba(255,255,255,0.7);
-            color: #4a0a1a;
+            border: 2px solid #8b6914;
+            background: rgba(245, 230, 208, 0.8);
+            color: #2a1505;
             font-weight: 600;
+            font-family: 'Cormorant Garamond', serif;
         }
     </style>
 </head>
 <body class="event-banner">
 
-<!-- ГЛАВНОЕ МЕНЮ (после входа) -->
+<!-- ЛИАНЫ НА ПЕРЕДНЕМ ПЛАНЕ -->
+<div class="vine vine-1"></div>
+<div class="vine vine-2"></div>
+<div class="vine vine-3"></div>
+<div class="vine vine-4"></div>
+<div class="vine-leaf" style="top: 15%; left: 5%;"></div>
+<div class="vine-leaf" style="top: 60%; right: 8%; transform: rotate(-30deg);"></div>
+<div class="vine-leaf" style="bottom: 20%; left: 30%; transform: rotate(15deg);"></div>
+
+<!-- ГЛАВНОЕ МЕНЮ -->
 <div class="main-menu-screen" id="mainMenuScreen">
     <div class="main-menu-card">
         <div class="main-menu-title">🌸 Solar Wish</div>
@@ -1229,7 +1454,7 @@
 <!-- КНОПКА АККАУНТА -->
 <div class="account-btn" id="accountBtn">👤</div>
 
-<!-- БОКОВАЯ ПАНЕЛЬ НАВИГАЦИИ -->
+<!-- БОКОВАЯ ПАНЕЛЬ НАВИГАЦИИ (СЛЕВА) -->
 <div class="nav-sidebar">
     <div class="nav-btn active" data-screen="world">
         <span>🌍</span>
@@ -1255,9 +1480,13 @@
         <span>📜</span>
         <span class="nav-tooltip">История</span>
     </div>
-    <div class="nav-btn" data-screen="settings">
+</div>
+
+<!-- ПАНЕЛЬ НАСТРОЕК (СПРАВА) -->
+<div class="settings-sidebar">
+    <div class="settings-btn" data-screen="settings">
         <span>⚙️</span>
-        <span class="nav-tooltip">Настройки</span>
+        <span class="settings-tooltip">Настройки</span>
     </div>
 </div>
 
@@ -1265,7 +1494,7 @@
 <div class="star-animation-overlay" id="starAnimation">
     <div class="star-container">
         <svg class="star-svg" id="starSvg" viewBox="0 0 100 100">
-            <polygon points="50,5 61,35 93,35 67,53 78,85 50,67 22,85 33,53 7,35 39,35" fill="#64b5f6" stroke="#fff" stroke-width="1.5"/>
+            <polygon points="50,5 61,35 93,35 67,53 78,85 50,67 22,85 33,53 7,35 39,35" fill="#64b5f6" stroke="#ffd700" stroke-width="1.5"/>
         </svg>
         <div class="star-text" id="starText">✨ Молитва ✨</div>
     </div>
@@ -1277,7 +1506,7 @@
     <div class="login-card">
         <div class="login-avatar" id="loginAvatar">🌸</div>
         <div class="login-title">Solar Wish</div>
-        <div class="login-subtitle">Войдите через Google, чтобы сохранять прогресс в облаке</div>
+        <div class="login-subtitle">Войдите через Google, чтобы сохранять прогресс</div>
         <button class="login-btn" id="loginBtn">
             <span>G</span> Войти через Google
         </button>
@@ -1295,38 +1524,39 @@
         <button class="logout-btn" id="logoutBtn">Выйти</button>
     </div>
 
-    <!-- ЭКРАН КАРТЫ МИРА -->
+    <!-- ЭКРАН КАРТЫ МИРА (СОЛНЕЧНЫЙ ГОРОД) -->
     <div class="main-screen active" id="worldScreen">
-        <div class="world-map">
-            <h2 class="map-title">🌍 Карта мира</h2>
-            <div class="map-locations">
-                <div class="map-location" data-location="city">
-                    <span class="location-icon">🏰</span>
-                    <div class="location-info">
-                        <h3>Солнечный город</h3>
-                        <p>Столица королевства, центр торговли и магии</p>
-                    </div>
+        <div class="world-container">
+            <div class="game-canvas" id="gameCanvas">
+                <!-- Игрок -->
+                <div class="player" id="player" style="left: 100px; top: 300px;"></div>
+                
+                <!-- Беседка 1: Таверна -->
+                <div class="gazebo" id="gazebo1" style="left: 200px; top: 150px;">
+                    <span class="gazebo-icon">🍺</span>
+                    <span class="gazebo-name">Таверна</span>
+                    <div class="interact-hint" id="hint1">Нажмите E</div>
                 </div>
-                <div class="map-location" data-location="tavern">
-                    <span class="location-icon">🍺</span>
-                    <div class="location-info">
-                        <h3>Таверна «Лунный свет»</h3>
-                        <p>Место встречи искателей приключений</p>
-                    </div>
+                
+                <!-- Беседка 2: Лавка -->
+                <div class="gazebo" id="gazebo2" style="left: 600px; top: 400px;">
+                    <span class="gazebo-icon">🛒</span>
+                    <span class="gazebo-name">Лавка</span>
+                    <div class="interact-hint" id="hint2">Нажмите E</div>
                 </div>
-                <div class="map-location" data-location="forest">
-                    <span class="location-icon">🌲</span>
-                    <div class="location-info">
-                        <h3>Шепчущий лес</h3>
-                        <p>Древний лес, полный тайн и загадок</p>
-                    </div>
+                
+                <!-- Беседка 3: Кузница -->
+                <div class="gazebo" id="gazebo3" style="left: 400px; top: 500px;">
+                    <span class="gazebo-icon">⚒️</span>
+                    <span class="gazebo-name">Кузница</span>
+                    <div class="interact-hint" id="hint3">Нажмите E</div>
                 </div>
-                <div class="map-location" data-location="shop">
-                    <span class="location-icon">🛒</span>
-                    <div class="location-info">
-                        <h3>Магазин</h3>
-                        <p>Покупка редких предметов и ресурсов</p>
-                    </div>
+                
+                <!-- Беседка 4: Сад -->
+                <div class="gazebo" id="gazebo4" style="left: 700px; top: 150px;">
+                    <span class="gazebo-icon">🌿</span>
+                    <span class="gazebo-name">Сад</span>
+                    <div class="interact-hint" id="hint4">Нажмите E</div>
                 </div>
             </div>
         </div>
@@ -1405,7 +1635,7 @@
     <!-- ЭКРАН ИСТОРИИ -->
     <div class="main-screen" id="historyScreen">
         <div class="tasks-screen">
-            <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">📜 История молитв</h3>
+            <h3 style="color:#3a1a0a; margin-bottom:20px; text-align:center; font-family:'Cinzel', serif;">📜 История молитв</h3>
             <div class="history-list" id="historyListContainer"></div>
             <div class="history-pagination" id="historyPagination">
                 <button class="history-page-btn" id="prevPageBtn" disabled>← Назад</button>
@@ -1418,7 +1648,7 @@
     <!-- ЭКРАН НАСТРОЕК -->
     <div class="main-screen" id="settingsScreen">
         <div class="settings-screen">
-            <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">⚙️ Настройки</h3>
+            <h3 style="color:#3a1a0a; margin-bottom:20px; text-align:center; font-family:'Cinzel', serif;">⚙️ Настройки</h3>
             <div class="settings-option">
                 <label>🎵 Звуки игры</label>
                 <input type="checkbox" id="soundToggle" checked>
@@ -1458,7 +1688,7 @@
 <div class="modal-overlay" id="itemsListModal">
     <div class="gacha-modal items-list-modal">
         <div class="modal-close" id="closeItemsListBtn">&times;</div>
-        <div class="items-list-header" style="font-size:1.8rem; color:#4a0a1a; margin-bottom:20px;">✨ Выпавшие предметы</div>
+        <div class="items-list-header" style="font-size:1.8rem; color:#3a1a0a; margin-bottom:20px;">✨ Выпавшие предметы</div>
         <div id="itemsListGrid"></div>
     </div>
 </div>
@@ -1475,12 +1705,12 @@
 <div class="modal-overlay" id="accountModal">
     <div class="gacha-modal account-modal">
         <div class="modal-close" id="closeAccountBtn">&times;</div>
-        <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">👤 Аккаунт</h3>
+        <h3 style="color:#3a1a0a; margin-bottom:20px; text-align:center; font-family:'Cinzel', serif;">👤 Аккаунт</h3>
         <div class="account-avatar-section">
             <div class="account-avatar-large" id="accountAvatarLarge">🌸</div>
             <div class="avatar-selector" id="avatarSelector"></div>
         </div>
-        <input type="text" class="account-input" id="accountNickname" placeholder="Никнейм" maxlength="20" disabled style="background: rgba(255,255,255,0.5);">
+        <input type="text" class="account-input" id="accountNickname" placeholder="Никнейм" maxlength="20" disabled style="background: rgba(245, 230, 208, 0.6);">
         <textarea class="account-textarea" id="accountDescription" placeholder="Описание профиля..."></textarea>
         <button class="save-account-btn" id="saveAccountBtn">Сохранить изменения</button>
     </div>
@@ -1490,7 +1720,7 @@
 <div class="modal-overlay" id="shopModal">
     <div class="gacha-modal shop-modal">
         <div class="modal-close" id="closeShopBtn">&times;</div>
-        <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">🛒 Магазин</h3>
+        <h3 style="color:#3a1a0a; margin-bottom:20px; text-align:center; font-family:'Cinzel', serif;">🛒 Лавка</h3>
         <div class="shop-items-grid" id="shopItemsGrid"></div>
     </div>
 </div>
@@ -1500,6 +1730,15 @@
     <div class="gacha-modal buy-modal">
         <div class="modal-close" id="closeBuyBtn">&times;</div>
         <div id="buyItemContent"></div>
+    </div>
+</div>
+
+<!-- МОДАЛКА БЕСЕДКИ -->
+<div class="modal-overlay" id="gazeboModal">
+    <div class="gacha-modal gazebo-menu" id="gazeboModalContent">
+        <div class="modal-close" id="closeGazeboBtn">&times;</div>
+        <h3 id="gazeboTitle">Таверна</h3>
+        <div id="gazeboMenuContent"></div>
     </div>
 </div>
 
@@ -1521,7 +1760,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ---------- ПРЕДМЕТЫ (РАСШИРЕННЫЕ) ----------
+        // ---------- ПРЕДМЕТЫ ----------
         const items3 = [
             { name: 'Сладкий лепесток', emoji: '🌸', lore: 'Нежный лепесток, упавший с волшебного дерева. Хранит в себе каплю утренней росы и частичку солнечного света.' },
             { name: 'Облачная лента', emoji: '🎀', lore: 'Лёгкая лента, сотканная из облаков. Говорят, она приносит удачу тем, кто носит её с собой.' },
@@ -1577,14 +1816,11 @@
         };
         const eventNames = ['Хана · Цветение', 'Сакура · Ветер'];
 
-        // Магазин
+        // Магазин (только 3 предмета)
         const shopItems = [
-            { name: 'Мешочек монет', emoji: '💰', price: 50, description: 'Небольшой мешочек с золотыми монетами. Приносит владельцу 1000 искр.' },
             { name: 'Свиток мудрости', emoji: '📜', price: 100, description: 'Древний свиток, содержащий секреты мастеров. Увеличивает шанс выпадения 4★ предметов на 10% на 1 час.' },
             { name: 'Зелье удачи', emoji: '🧪', price: 200, description: 'Волшебное зелье, приносящее удачу. Увеличивает шанс выпадения 5★ предметов на 5% на 30 минут.' },
-            { name: 'Кристалл силы', emoji: '💎', price: 150, description: 'Магический кристалл, наполненный энергией. Восстанавливает 10 осколков для случайного ивентового персонажа.' },
-            { name: 'Амулет защиты', emoji: '🛡️', price: 80, description: 'Защитный амулет, который оберегает от неудач. Предотвращает проигрыш 50/50 один раз.' },
-            { name: 'Карта сокровищ', emoji: '🗺️', price: 120, description: 'Старинная карта, ведущая к сокровищам. Даёт 5000 искр и 200 сумеречников.' }
+            { name: 'Амулет защиты', emoji: '🛡️', price: 80, description: 'Защитный амулет, который оберегает от неудач. Предотвращает проигрыш 50/50 один раз.' }
         ];
 
         let currentUser = null;
@@ -1645,6 +1881,12 @@
         let loginStreak = 0;
         let daysPlayed = 0;
 
+        // Перемещение игрока
+        let playerX = 100, playerY = 300;
+        const moveSpeed = 8;
+        const keys = { w: false, a: false, s: false, d: false };
+        let nearGazebo = null;
+
         // DOM элементы
         const loginScreen = document.getElementById('loginScreen');
         const mainMenuScreen = document.getElementById('mainMenuScreen');
@@ -1667,6 +1909,19 @@
         const ticketEl = document.getElementById('ticketCount');
         const topGems = document.getElementById('topGems');
         const topTwilight = document.getElementById('topTwilight');
+        
+        const player = document.getElementById('player');
+        const gazebo1 = document.getElementById('gazebo1');
+        const gazebo2 = document.getElementById('gazebo2');
+        const gazebo3 = document.getElementById('gazebo3');
+        const gazebo4 = document.getElementById('gazebo4');
+        const hint1 = document.getElementById('hint1');
+        const hint2 = document.getElementById('hint2');
+        const hint3 = document.getElementById('hint3');
+        const hint4 = document.getElementById('hint4');
+        const gazeboModal = document.getElementById('gazeboModal');
+        const gazeboTitle = document.getElementById('gazeboTitle');
+        const gazeboMenuContent = document.getElementById('gazeboMenuContent');
         
         const starAnimation = document.getElementById('starAnimation');
         const skipStarBtn = document.getElementById('skipStarBtn');
@@ -1709,11 +1964,122 @@
         let currentItems = [];
         let currentItemIndex = 0;
 
+        // ---------- ПЕРЕМЕЩЕНИЕ ИГРОКА ----------
+        function updatePlayerPosition() {
+            player.style.left = playerX + 'px';
+            player.style.top = playerY + 'px';
+            
+            // Проверка близости к беседкам
+            const gazebos = [gazebo1, gazebo2, gazebo3, gazebo4];
+            const hints = [hint1, hint2, hint3, hint4];
+            const gazeboNames = ['Таверна', 'Лавка', 'Кузница', 'Сад'];
+            let foundNearby = false;
+            
+            gazebos.forEach((gazebo, index) => {
+                const gazeboLeft = parseFloat(gazebo.style.left);
+                const gazeboTop = parseFloat(gazebo.style.top);
+                const dist = Math.sqrt(Math.pow(playerX - gazeboLeft, 2) + Math.pow(playerY - gazeboTop, 2));
+                
+                if (dist < 80) {
+                    hints[index].classList.add('visible');
+                    nearGazebo = { element: gazebo, name: gazeboNames[index], index: index };
+                    foundNearby = true;
+                } else {
+                    hints[index].classList.remove('visible');
+                }
+            });
+            
+            if (!foundNearby) nearGazebo = null;
+        }
+
+        function gameLoop() {
+            let moved = false;
+            if (keys.w) { playerY = Math.max(30, playerY - moveSpeed); moved = true; }
+            if (keys.s) { playerY = Math.min(570, playerY + moveSpeed); moved = true; }
+            if (keys.a) { playerX = Math.max(30, playerX - moveSpeed); moved = true; }
+            if (keys.d) { playerX = Math.min(870, playerX + moveSpeed); moved = true; }
+            if (moved) updatePlayerPosition();
+            requestAnimationFrame(gameLoop);
+        }
+
+        window.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+                e.preventDefault();
+                keys[key] = true;
+            }
+            if (key === 'e' && nearGazebo && !gazeboModal.classList.contains('active')) {
+                e.preventDefault();
+                openGazeboMenu(nearGazebo.name);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            const key = e.key.toLowerCase();
+            if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+                e.preventDefault();
+                keys[key] = false;
+            }
+        });
+
+        function openGazeboMenu(gazeboName) {
+            gazeboTitle.textContent = gazeboName;
+            let html = '';
+            
+            if (gazeboName === 'Таверна') {
+                html = `<button class="gazebo-menu-btn" data-action="rest">🛌 Отдохнуть (восстановить силы)</button>
+                        <button class="gazebo-menu-btn" data-action="talk">💬 Поговорить с трактирщиком</button>
+                        <button class="gazebo-menu-btn" data-action="drink">🍺 Заказать эль (50🌙)</button>`;
+            } else if (gazeboName === 'Лавка') {
+                html = `<button class="gazebo-menu-btn" data-action="shop">🛒 Открыть магазин</button>
+                        <button class="gazebo-menu-btn" data-action="sell">💰 Продать предметы</button>
+                        <button class="gazebo-menu-btn" data-action="talk">💬 Поговорить с торговцем</button>`;
+            } else if (gazeboName === 'Кузница') {
+                html = `<button class="gazebo-menu-btn" data-action="upgrade">⚒️ Улучшить оружие</button>
+                        <button class="gazebo-menu-btn" data-action="repair">🔧 Починить снаряжение</button>
+                        <button class="gazebo-menu-btn" data-action="talk">💬 Поговорить с кузнецом</button>`;
+            } else if (gazeboName === 'Сад') {
+                html = `<button class="gazebo-menu-btn" data-action="collect">🌿 Собрать травы</button>
+                        <button class="gazebo-menu-btn" data-action="meditate">🧘 Медитировать</button>
+                        <button class="gazebo-menu-btn" data-action="talk">💬 Поговорить с садовником</button>`;
+            }
+            
+            gazeboMenuContent.innerHTML = html;
+            gazeboModal.classList.add('active');
+            
+            document.querySelectorAll('.gazebo-menu-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const action = btn.dataset.action;
+                    if (action === 'shop') {
+                        gazeboModal.classList.remove('active');
+                        openShopModal();
+                    } else if (action === 'drink') {
+                        if (twilight >= 50) {
+                            twilight -= 50;
+                            showNotification('🍺 Вы выпили эль и чувствуете прилив сил!', 0);
+                            updateUI();
+                            saveCloudProgress(currentUser);
+                        } else {
+                            showNotification('Недостаточно сумеречников!', 0);
+                        }
+                        gazeboModal.classList.remove('active');
+                    } else {
+                        showNotification(`Действие "${btn.textContent}" пока в разработке!`, 0);
+                        gazeboModal.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        document.getElementById('closeGazeboBtn').addEventListener('click', () => gazeboModal.classList.remove('active'));
+        gazeboModal.addEventListener('click', e => { if (e.target === gazeboModal) gazeboModal.classList.remove('active'); });
+
         // Главное меню
         document.getElementById('enterWorldBtn').addEventListener('click', () => {
             mainMenuScreen.classList.remove('active');
             gameWrapper.classList.add('visible');
             document.body.classList.add('world-background');
+            updatePlayerPosition();
         });
         document.getElementById('mainMenuSettingsBtn').addEventListener('click', () => {
             mainMenuScreen.classList.remove('active');
@@ -1721,7 +2087,6 @@
             document.querySelectorAll('.main-screen').forEach(s => s.classList.remove('active'));
             document.getElementById('settingsScreen').classList.add('active');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector('[data-screen="settings"]').classList.add('active');
             document.body.classList.add('settings-background');
         });
         document.getElementById('mainMenuLogoutBtn').addEventListener('click', async () => {
@@ -1834,7 +2199,6 @@
                 else if (screen === 'gacha') document.body.classList.add('gacha-background');
                 else if (screen === 'gallery') { document.body.classList.add('gallery-background'); renderGallery(); }
                 else if (screen === 'history') { document.body.classList.add('history-background'); renderHistoryPage(); }
-                else if (screen === 'settings') document.body.classList.add('settings-background');
                 
                 if (screen === 'history' && !dailyTasks.viewHistory.completed) {
                     dailyTasks.viewHistory.completed = true;
@@ -1849,6 +2213,16 @@
                     updateUI();
                 }
             });
+        });
+
+        // Кнопка настроек справа
+        document.querySelector('.settings-btn').addEventListener('click', () => {
+            document.querySelectorAll('.main-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('settingsScreen').classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('.settings-btn').classList.add('active');
+            document.body.classList.remove('world-background', 'tasks-background', 'achievements-background', 'gacha-background', 'gallery-background', 'history-background');
+            document.body.classList.add('settings-background');
         });
 
         // Кнопка аккаунта
@@ -1913,23 +2287,6 @@
             });
         });
 
-        // Карта мира + магазин
-        document.querySelectorAll('.map-location').forEach(loc => {
-            loc.addEventListener('click', () => {
-                const location = loc.dataset.location;
-                if (location === 'forest' && !universeTasks.flowerCollect.completed && !universeTasks.flowerCollect.claimed) {
-                    universeTasks.flowerCollect.progress++;
-                    if (universeTasks.flowerCollect.progress >= universeTasks.flowerCollect.target) {
-                        universeTasks.flowerCollect.completed = true;
-                    }
-                    showNotification(`🌼 Собрано цветов: ${universeTasks.flowerCollect.progress}/${universeTasks.flowerCollect.target}`, 0);
-                    saveCloudProgress(currentUser);
-                } else if (location === 'shop') {
-                    openShopModal();
-                }
-            });
-        });
-
         function openShopModal() {
             let html = '';
             shopItems.forEach((item, index) => {
@@ -1963,26 +2320,26 @@
                 html += `<div class="item-detail-name">${item.name}</div>`;
                 html += `<div class="item-detail-lore">${item.description}</div>`;
                 html += `<div class="buy-controls">`;
-                html += `<span style="color:#4a0a1a;">Количество:</span>`;
-                html += `<div class="buy-slider"><input type="range" id="buySlider" min="1" max="${maxQuantity}" value="${quantity}"></div>`;
-                html += `<span class="buy-quantity" id="buyQuantity">${quantity}</span>`;
+                html += `<span style="color:#3a1a0a;">Количество: ${quantity}</span>`;
                 html += `</div>`;
                 html += `<div style="display:flex; justify-content:space-between; margin-top:10px;">`;
-                html += `<span style="color:#4a0a1a;">Цена за шт: 🌙 ${pricePerItem}</span>`;
+                html += `<span style="color:#3a1a0a;">Цена за шт: 🌙 ${pricePerItem}</span>`;
                 html += `<span class="buy-total" id="buyTotal">🌙 ${total}</span>`;
+                html += `</div>`;
+                html += `<div style="display:flex; gap:10px; margin-top:15px;">`;
+                for (let i = 1; i <= Math.min(5, maxQuantity); i++) {
+                    html += `<button class="quantity-btn" data-qty="${i}" style="flex:1; padding:10px; background:rgba(245,230,208,0.6); border:1px solid #8b6914; border-radius:10px; cursor:pointer; font-family:'Cinzel',serif;">${i}</button>`;
+                }
                 html += `</div>`;
                 html += `<button class="buy-btn" id="confirmBuyBtn">Купить</button>`;
                 html += `</div></div>`;
                 buyItemContent.innerHTML = html;
                 
-                const slider = document.getElementById('buySlider');
-                const quantitySpan = document.getElementById('buyQuantity');
-                const totalSpan = document.getElementById('buyTotal');
-                
-                slider.addEventListener('input', () => {
-                    quantity = parseInt(slider.value);
-                    quantitySpan.textContent = quantity;
-                    totalSpan.textContent = `🌙 ${pricePerItem * quantity}`;
+                document.querySelectorAll('.quantity-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        quantity = parseInt(btn.dataset.qty);
+                        updateBuyContent();
+                    });
                 });
                 
                 document.getElementById('confirmBuyBtn').addEventListener('click', () => {
@@ -1992,14 +2349,7 @@
                         return;
                     }
                     twilight -= totalCost;
-                    
-                    if (item.name === 'Мешочек монет') {
-                        gems += 1000 * quantity;
-                        showNotification(`Получено ${1000 * quantity}✨!`, 0);
-                    } else {
-                        showNotification(`Куплено: ${item.name} x${quantity}!`, 0);
-                    }
-                    
+                    showNotification(`Куплено: ${item.name} x${quantity}!`, 0);
                     updateUI();
                     saveCloudProgress(currentUser);
                     buyModal.classList.remove('active');
@@ -2019,10 +2369,10 @@
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
-                background: linear-gradient(145deg, #fff0f5, #fce4ec);
-                padding: 15px 30px; border-radius: 50px; border: 2px solid white;
-                box-shadow: 0 10px 30px rgba(240,98,146,0.3); z-index: 3000;
-                color: #4a0a1a; font-weight: 600;
+                background: linear-gradient(145deg, #f5e6d0, #e8d4b8);
+                padding: 15px 30px; border-radius: 50px; border: 2px solid #8b6914;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 3000;
+                color: #3a1a0a; font-weight: 600; font-family: 'Cinzel', serif;
             `;
             notification.innerHTML = reward > 0 ? `✅ ${text} +${reward}✨` : text;
             document.body.appendChild(notification);
@@ -2057,7 +2407,7 @@
                 html += `</div>`;
             });
             
-            tasksList.innerHTML = html || '<div style="text-align:center; color:#4a0a1a; padding:20px;">Нет заданий</div>';
+            tasksList.innerHTML = html || '<div style="text-align:center; color:#3a1a0a; padding:20px;">Нет заданий</div>';
             
             document.querySelectorAll('.claim-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -2102,7 +2452,7 @@
                 html += `</div>`;
             });
             
-            achievementsList.innerHTML = html || '<div style="text-align:center; color:#4a0a1a; padding:20px;">Нет достижений</div>';
+            achievementsList.innerHTML = html || '<div style="text-align:center; color:#3a1a0a; padding:20px;">Нет достижений</div>';
             
             document.querySelectorAll('[data-ach]').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -2371,7 +2721,7 @@
             const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE) || 1;
             const start = (currentPage - 1) * ITEMS_PER_PAGE, end = start + ITEMS_PER_PAGE;
             const pageItems = history.slice(start, end);
-            if (pageItems.length === 0) { historyListContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#4a0a1a;">Нет записей</div>'; }
+            if (pageItems.length === 0) { historyListContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#3a1a0a;">Нет записей</div>'; }
             else {
                 let html = '';
                 pageItems.forEach(item => {
@@ -2395,7 +2745,7 @@
             const all3 = items3.slice(0, 16).map(i => ({ ...i, rarity: 3 }));
             let html = '';
             [ { title: '🌸 5★ Ивентовые', items: all5Event }, { title: '💙 5★ Стандартные', items: all5Standard }, { title: '✨ 4★ Эпические', items: all4 }, { title: '🌸 3★ Обычные', items: all3 } ].forEach((section, idx) => {
-                if (idx > 0) html += '<div style="height:2px; background:rgba(139,37,64,0.2); margin:20px 0;"></div>';
+                if (idx > 0) html += '<div style="height:2px; background:rgba(139,105,20,0.3); margin:20px 0;"></div>';
                 html += `<div class="gallery-section"><h3>${section.title}</h3><div class="gallery-grid">`;
                 section.items.forEach(item => {
                     const owned = ownedItems.has(`${item.rarity}-${item.name}`);
@@ -2563,6 +2913,10 @@
             nextPageBtn.addEventListener('click', () => { const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE) || 1; if (currentPage < totalPages) { currentPage++; renderHistoryPage(); } });
             
             setInterval(updateTimeBadge, 60000);
+            
+            // Запуск игрового цикла
+            requestAnimationFrame(gameLoop);
+            
             updateUI();
         }
         init();
