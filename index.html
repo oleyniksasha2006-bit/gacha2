@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌸 Солнечная Гача · Облачное сохранение</title>
+    <title>🌸 Солнечная Гача · Полное обновление</title>
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -46,6 +46,9 @@
         body.history-background {
             background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important;
         }
+        body.settings-background {
+            background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #f06292 100%);
+        }
 
         /* Затемнение для читаемости */
         body.world-background::before,
@@ -53,7 +56,8 @@
         body.achievements-background::before,
         body.gacha-background::before,
         body.gallery-background::before,
-        body.history-background::before {
+        body.history-background::before,
+        body.settings-background::before {
             content: '';
             position: fixed;
             top: 0;
@@ -87,6 +91,100 @@
         @keyframes bgPulse {
             0% { opacity: 0.6; transform: scale(1); }
             100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Анимации для модальных окон */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 1500;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .gacha-modal {
+            background: linear-gradient(145deg, #fff0f5, #fce4ec);
+            border-radius: 60px; padding: 40px; max-width: 400px; width: 90%;
+            text-align: center; border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 30px 60px rgba(240, 98, 146, 0.4);
+            position: relative;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+        }
+        .modal-overlay.active .gacha-modal {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .modal-close {
+            position: absolute; top: 20px; right: 25px;
+            font-size: 2rem; cursor: pointer; color: #4a0a1a;
+            width: 40px; height: 40px; display: flex; align-items: center;
+            justify-content: center; border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: transform 0.2s ease, background 0.2s;
+        }
+        .modal-close:hover {
+            transform: rotate(90deg);
+            background: rgba(255,255,255,0.6);
+        }
+
+        /* --- ГЛАВНОЕ МЕНЮ (после входа) --- */
+        .main-menu-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: none; justify-content: center; align-items: center; z-index: 500;
+        }
+        .main-menu-screen.active {
+            display: flex;
+        }
+        .main-menu-card {
+            background: rgba(255, 245, 250, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 60px;
+            padding: 50px 60px;
+            text-align: center;
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 30px 60px rgba(240, 98, 146, 0.2);
+            transform: scale(0.9);
+            opacity: 0;
+            animation: menuAppear 0.4s ease forwards;
+        }
+        @keyframes menuAppear {
+            to { transform: scale(1); opacity: 1; }
+        }
+        .main-menu-title {
+            font-size: 3rem;
+            color: #4a0a1a;
+            margin-bottom: 40px;
+            text-shadow: 0 3px 10px rgba(255,255,255,0.8);
+        }
+        .main-menu-btn {
+            width: 100%;
+            padding: 20px 40px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4a0a1a;
+            background: rgba(255, 255, 255, 0.6);
+            border: 2px solid white;
+            border-radius: 60px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #8b2540;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .main-menu-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #8b2540;
+        }
+        .main-menu-btn.logout {
+            background: rgba(139, 37, 64, 0.3);
+            color: #4a0a1a;
+            box-shadow: 0 6px 0 #6b1a2a;
         }
 
         /* --- ВЕРХНЯЯ ПАНЕЛЬ С ВАЛЮТАМИ --- */
@@ -220,8 +318,13 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
-        .star-animation-overlay.active { display: flex; }
+        .star-animation-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
 
         .star-container {
             position: relative;
@@ -282,12 +385,22 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px);
             display: flex; justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .login-screen.active {
+            opacity: 1;
         }
         .login-screen.hidden { display: none; }
         .login-card {
             background: linear-gradient(145deg, #fff0f5, #fce4ec);
             border-radius: 60px; padding: 45px 40px; max-width: 420px; width: 90%;
             text-align: center; border: 3px solid rgba(255, 255, 255, 0.8);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .login-screen.active .login-card {
+            transform: scale(1);
         }
         .login-avatar {
             width: 100px; height: 100px; margin: 0 auto 20px;
@@ -306,10 +419,6 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-        }
-        .login-btn img {
-            width: 24px;
-            height: 24px;
         }
         .error-message { color: #8b0000; font-size: 0.9rem; margin-top: 10px; }
 
@@ -356,9 +465,12 @@
         /* --- ПЕРЕКЛЮЧАТЕЛЬ ОСНОВНЫХ ЭКРАНОВ --- */
         .main-screen {
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         .main-screen.active {
             display: block;
+            opacity: 1;
         }
 
         /* --- КАРТА МИРА --- */
@@ -739,12 +851,12 @@
 
         /* --- МОДАЛКА ПРЕДМЕТА ГАЛЕРЕИ --- */
         .gallery-item-modal .modal-content {
-            max-width: 450px;
+            max-width: 550px;
             padding: 30px;
         }
         .item-detail-container {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             align-items: flex-start;
         }
         .item-detail-left {
@@ -755,13 +867,16 @@
         .item-detail-emoji {
             font-size: 5rem;
             background: rgba(255,255,255,0.4);
-            padding: 15px;
+            padding: 20px;
             border-radius: 30px;
             border: 2px solid white;
         }
         .item-detail-right {
             flex: 1;
             text-align: left;
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 10px;
         }
         .item-detail-name {
             font-size: 1.8rem;
@@ -777,18 +892,20 @@
         }
         .item-detail-lore {
             color: #4a0a1a;
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.6;
             margin-bottom: 20px;
-            padding: 10px;
+            padding: 15px;
             background: rgba(255,255,255,0.3);
-            border-radius: 15px;
+            border-radius: 20px;
+            word-wrap: break-word;
         }
         .constellation-container {
             display: flex;
             gap: 10px;
-            justify-content: center;
+            justify-content: flex-start;
             margin-top: 15px;
+            flex-wrap: wrap;
         }
         .constellation-shard {
             width: 45px;
@@ -837,32 +954,97 @@
             display: none;
         }
 
-        /* Модалки */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; z-index: 1500;
+        /* --- МОДАЛКА МАГАЗИНА --- */
+        .shop-modal {
+            max-width: 600px;
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 30px;
         }
-        .modal-overlay.active { display: flex; }
+        .shop-items-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .shop-item-card {
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 25px;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            border: 1.5px solid white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .shop-item-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255,255,255,0.6);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        .shop-item-emoji {
+            font-size: 3rem;
+        }
+        .shop-item-name {
+            font-weight: 600;
+            color: #4a0a1a;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .shop-item-price {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #8b2540;
+            font-weight: 600;
+        }
 
-        .gacha-modal {
-            background: linear-gradient(145deg, #fff0f5, #fce4ec);
-            border-radius: 60px; padding: 40px; max-width: 400px; width: 90%;
-            text-align: center; border: 3px solid rgba(255, 255, 255, 0.8);
-            box-shadow: 0 30px 60px rgba(240, 98, 146, 0.4);
-            position: relative; animation: modalPop 0.3s ease;
+        /* Модалка покупки */
+        .buy-modal .item-detail-container {
+            flex-direction: column;
         }
-        @keyframes modalPop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-close {
-            position: absolute; top: 20px; right: 25px;
-            font-size: 2rem; cursor: pointer; color: #4a0a1a;
-            width: 40px; height: 40px; display: flex; align-items: center;
-            justify-content: center; border-radius: 50%;
+        .buy-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 15px;
             background: rgba(255,255,255,0.3);
+            border-radius: 20px;
+        }
+        .buy-slider {
+            flex: 1;
+            margin: 0 15px;
+        }
+        .buy-slider input {
+            width: 100%;
+            accent-color: #8b2540;
+        }
+        .buy-quantity {
+            font-weight: 600;
+            color: #4a0a1a;
+            min-width: 50px;
+            text-align: center;
+        }
+        .buy-total {
+            font-weight: 600;
+            color: #8b2540;
+            font-size: 1.2rem;
+        }
+        .buy-btn {
+            background: linear-gradient(145deg, #8b2540, #6b1a2a);
+            border: none;
+            border-radius: 40px;
+            padding: 14px 30px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #4a0a1a;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 1.1rem;
         }
 
         .modal-item-emoji { font-size: 6rem; margin: 20px 0 10px; }
@@ -985,9 +1167,58 @@
             cursor: pointer;
             box-shadow: 0 4px 0 #4a0a1a;
         }
+
+        /* --- НАСТРОЙКИ --- */
+        .settings-screen {
+            background: rgba(255, 245, 250, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 24px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            min-height: 400px;
+        }
+        .settings-option {
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 25px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid white;
+        }
+        .settings-option label {
+            color: #4a0a1a;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .settings-option input[type="checkbox"] {
+            width: 50px;
+            height: 25px;
+            accent-color: #8b2540;
+        }
+        .settings-option select {
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid white;
+            background: rgba(255,255,255,0.7);
+            color: #4a0a1a;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="event-banner">
+
+<!-- ГЛАВНОЕ МЕНЮ (после входа) -->
+<div class="main-menu-screen" id="mainMenuScreen">
+    <div class="main-menu-card">
+        <div class="main-menu-title">🌸 Solar Wish</div>
+        <button class="main-menu-btn" id="enterWorldBtn">Войти в мир</button>
+        <button class="main-menu-btn" id="mainMenuSettingsBtn">⚙️ Настройки</button>
+        <button class="main-menu-btn logout" id="mainMenuLogoutBtn">🚪 Выйти из аккаунта</button>
+    </div>
+</div>
 
 <!-- ВЕРХНЯЯ ПАНЕЛЬ С ВАЛЮТАМИ -->
 <div class="top-currency-panel" id="topCurrencyPanel">
@@ -1024,6 +1255,10 @@
         <span>📜</span>
         <span class="nav-tooltip">История</span>
     </div>
+    <div class="nav-btn" data-screen="settings">
+        <span>⚙️</span>
+        <span class="nav-tooltip">Настройки</span>
+    </div>
 </div>
 
 <!-- АНИМАЦИЯ ЗВЕЗДЫ -->
@@ -1038,7 +1273,7 @@
 </div>
 
 <!-- ЭКРАН ВХОДА -->
-<div class="login-screen" id="loginScreen">
+<div class="login-screen active" id="loginScreen">
     <div class="login-card">
         <div class="login-avatar" id="loginAvatar">🌸</div>
         <div class="login-title">Solar Wish</div>
@@ -1179,6 +1414,28 @@
             </div>
         </div>
     </div>
+
+    <!-- ЭКРАН НАСТРОЕК -->
+    <div class="main-screen" id="settingsScreen">
+        <div class="settings-screen">
+            <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">⚙️ Настройки</h3>
+            <div class="settings-option">
+                <label>🎵 Звуки игры</label>
+                <input type="checkbox" id="soundToggle" checked>
+            </div>
+            <div class="settings-option">
+                <label>🎶 Музыка</label>
+                <input type="checkbox" id="musicToggle" checked>
+            </div>
+            <div class="settings-option">
+                <label>🌙 Тема</label>
+                <select id="themeSelect">
+                    <option value="light">Светлая</option>
+                    <option value="dark">Тёмная</option>
+                </select>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- МОДАЛКА ОДНОГО ПРЕДМЕТА -->
@@ -1229,6 +1486,23 @@
     </div>
 </div>
 
+<!-- МОДАЛКА МАГАЗИНА -->
+<div class="modal-overlay" id="shopModal">
+    <div class="gacha-modal shop-modal">
+        <div class="modal-close" id="closeShopBtn">&times;</div>
+        <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">🛒 Магазин</h3>
+        <div class="shop-items-grid" id="shopItemsGrid"></div>
+    </div>
+</div>
+
+<!-- МОДАЛКА ПОКУПКИ -->
+<div class="modal-overlay" id="buyModal">
+    <div class="gacha-modal buy-modal">
+        <div class="modal-close" id="closeBuyBtn">&times;</div>
+        <div id="buyItemContent"></div>
+    </div>
+</div>
+
 <script>
     (function(){
         // ---------- 🔥 ВАШ КОНФИГ FIREBASE ----------
@@ -1247,30 +1521,48 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ---------- ПРЕДМЕТЫ ----------
+        // ---------- ПРЕДМЕТЫ (РАСШИРЕННЫЕ) ----------
         const items3 = [
-            { name: 'Сладкий лепесток', emoji: '🌸' },
-            { name: 'Облачная лента', emoji: '🎀' },
-            { name: 'Хрустальный осколок', emoji: '💠' },
-            { name: 'Звёздная пыль', emoji: '✨' },
-            { name: 'Шёлковая нить', emoji: '🧵' },
-            { name: 'Перламутр', emoji: '🐚' }
+            { name: 'Сладкий лепесток', emoji: '🌸', lore: 'Нежный лепесток, упавший с волшебного дерева. Хранит в себе каплю утренней росы и частичку солнечного света.' },
+            { name: 'Облачная лента', emoji: '🎀', lore: 'Лёгкая лента, сотканная из облаков. Говорят, она приносит удачу тем, кто носит её с собой.' },
+            { name: 'Хрустальный осколок', emoji: '💠', lore: 'Осколок древнего кристалла, который когда-то освещал путь заблудшим путникам. Содержит слабую магию.' },
+            { name: 'Звёздная пыль', emoji: '✨', lore: 'Щепотка пыли, упавшей с падающей звезды. Говорят, если загадать желание, оно обязательно сбудется.' },
+            { name: 'Шёлковая нить', emoji: '🧵', lore: 'Нить из шёлка лунного мотылька. Невероятно прочная и почти невидимая в темноте.' },
+            { name: 'Перламутр', emoji: '🐚', lore: 'Раковина, найденная на берегу Забытого моря. Переливается всеми цветами радуги при свете луны.' },
+            { name: 'Капля росы', emoji: '💧', lore: 'Утренняя роса, собранная с лепестков волшебных цветов. Говорят, она может исцелять мелкие раны.' },
+            { name: 'Пёрышко', emoji: '🪶', lore: 'Перо сказочной птицы, обитающей в Шепчущем лесу. Очень лёгкое и приятное на ощупь.' },
+            { name: 'Ягодка', emoji: '🍓', lore: 'Лесная ягода, обладающая приятным сладким вкусом. Говорят, она придаёт сил на целый день.' },
+            { name: 'Камушек', emoji: '🪨', lore: 'Гладкий речной камень, обточенный водой за сотни лет. Считается символом терпения и мудрости.' },
+            { name: 'Листочек', emoji: '🍃', lore: 'Лист с дерева, растущего в самом сердце леса. Никогда не увядает и всегда остаётся зелёным.' },
+            { name: 'Светлячок', emoji: '🪲', lore: 'Маленький светлячок, который светится даже днём. Говорят, он может осветить путь в самой тёмной пещере.' },
+            { name: 'Ракушка', emoji: '🐚', lore: 'Морская ракушка, в которой можно услышать шум волн. Приносит спокойствие и умиротворение.' },
+            { name: 'Монетка', emoji: '🪙', lore: 'Старинная монета неизвестного королевства. Говорят, она приносит финансовую удачу.' },
+            { name: 'Кристаллик', emoji: '💎', lore: 'Маленький кристалл, добытый в глубоких шахтах. Слабо светится в темноте.' },
+            { name: 'Цветочек', emoji: '🌼', lore: 'Полевой цветок, который никогда не вянет. Символ вечной красоты и молодости.' }
         ];
+        
         const items4 = [
-            { name: 'Лунная серьга', emoji: '🌙' },
-            { name: 'Сапфировый браслет', emoji: '💎' },
-            { name: 'Кольцо Рассвета', emoji: '💍' },
-            { name: 'Книга Теней', emoji: '📖' },
-            { name: 'Эликсир Грёз', emoji: '🧪' },
-            { name: 'Веер Сакуры', emoji: '🎐' }
+            { name: 'Лунная серьга', emoji: '🌙', lore: 'Серьга, выкованная из лунного серебра. Говорят, она позволяет слышать шёпот звёзд.' },
+            { name: 'Сапфировый браслет', emoji: '💎', lore: 'Браслет с крупным сапфиром, который меняет цвет в зависимости от настроения владельца.' },
+            { name: 'Кольцо Рассвета', emoji: '💍', lore: 'Кольцо, которое сияет первыми лучами солнца. Дарит надежду и вдохновение.' },
+            { name: 'Книга Теней', emoji: '📖', lore: 'Древняя книга, исписанная таинственными рунами. Содержит знания, недоступные простым смертным.' },
+            { name: 'Эликсир Грёз', emoji: '🧪', lore: 'Магический эликсир, позволяющий видеть вещие сны. Один глоток — и вы погружаетесь в мир фантазий.' },
+            { name: 'Веер Сакуры', emoji: '🎐', lore: 'Изящный веер, украшенный лепестками сакуры. Один взмах — и ветер приносит удачу.' },
+            { name: 'Амулет Силы', emoji: '🏵️', lore: 'Древний амулет, который носят воины перед битвой. Придаёт уверенности и сил.' },
+            { name: 'Зеркальце', emoji: '🪞', lore: 'Волшебное зеркало, которое показывает истинную красоту души. Не лжёт и не льстит.' },
+            { name: 'Флакон Духов', emoji: '🧴', lore: 'Духи с ароматом, который меняется под настроение. Уникальный запах для каждого.' },
+            { name: 'Шкатулка', emoji: '🎁', lore: 'Музыкальная шкатулка, играющая колыбельную звёзд. Успокаивает и дарит сладкие сны.' },
+            { name: 'Перо Феникса', emoji: '🔥', lore: 'Перо, упавшее с крыла самого Феникса. Говорят, оно может защитить от огня.' }
         ];
+        
         const items5Standard = [
-            { name: 'Клинок Заката', emoji: '⚔️' },
-            { name: 'Сфера Эона', emoji: '🔮' },
-            { name: 'Корона Миражей', emoji: '👑' },
-            { name: 'Сердце Феникса', emoji: '🔥' },
-            { name: 'Посох Вечности', emoji: '🌌' }
+            { name: 'Клинок Заката', emoji: '⚔️', lore: 'Легендарный меч, выкованный в лучах заходящего солнца. Рассекает тьму и приносит победу.' },
+            { name: 'Сфера Эона', emoji: '🔮', lore: 'Магическая сфера, содержащая в себе частицу вечности. Позволяет видеть прошлое и будущее.' },
+            { name: 'Корона Миражей', emoji: '👑', lore: 'Корона, созданная из иллюзий. Делает своего владельца невидимым для врагов.' },
+            { name: 'Сердце Феникса', emoji: '🔥', lore: 'Пылающее сердце возрождённого Феникса. Дарует вторую жизнь тому, кто его носит.' },
+            { name: 'Посох Вечности', emoji: '🌌', lore: 'Посох, хранящий в себе энергию космоса. Усиливает магические способности в десятки раз.' }
         ];
+        
         const items5Event = {
             'Хана · Цветение': { 
                 name: 'Хана · Цветение', 
@@ -1284,6 +1576,16 @@
             }
         };
         const eventNames = ['Хана · Цветение', 'Сакура · Ветер'];
+
+        // Магазин
+        const shopItems = [
+            { name: 'Мешочек монет', emoji: '💰', price: 50, description: 'Небольшой мешочек с золотыми монетами. Приносит владельцу 1000 искр.' },
+            { name: 'Свиток мудрости', emoji: '📜', price: 100, description: 'Древний свиток, содержащий секреты мастеров. Увеличивает шанс выпадения 4★ предметов на 10% на 1 час.' },
+            { name: 'Зелье удачи', emoji: '🧪', price: 200, description: 'Волшебное зелье, приносящее удачу. Увеличивает шанс выпадения 5★ предметов на 5% на 30 минут.' },
+            { name: 'Кристалл силы', emoji: '💎', price: 150, description: 'Магический кристалл, наполненный энергией. Восстанавливает 10 осколков для случайного ивентового персонажа.' },
+            { name: 'Амулет защиты', emoji: '🛡️', price: 80, description: 'Защитный амулет, который оберегает от неудач. Предотвращает проигрыш 50/50 один раз.' },
+            { name: 'Карта сокровищ', emoji: '🗺️', price: 120, description: 'Старинная карта, ведущая к сокровищам. Даёт 5000 искр и 200 сумеречников.' }
+        ];
 
         let currentUser = null;
         let gems = 16000;
@@ -1345,6 +1647,7 @@
 
         // DOM элементы
         const loginScreen = document.getElementById('loginScreen');
+        const mainMenuScreen = document.getElementById('mainMenuScreen');
         const gameWrapper = document.getElementById('gameWrapper');
         const loginBtn = document.getElementById('loginBtn');
         const loginError = document.getElementById('loginError');
@@ -1355,7 +1658,6 @@
         const bannerNameEl = document.getElementById('bannerName');
         const bannerIcon = document.getElementById('bannerIcon');
         const bannerSub = document.getElementById('bannerSub');
-        const guaranteeLabel = document.getElementById('guaranteeLabel');
         const timeBadge = document.getElementById('timeBadge');
         const pity5El = document.getElementById('pity5Display');
         const pity4El = document.getElementById('pity4Display');
@@ -1375,6 +1677,8 @@
         const itemsListModal = document.getElementById('itemsListModal');
         const galleryItemModal = document.getElementById('galleryItemModal');
         const accountModal = document.getElementById('accountModal');
+        const shopModal = document.getElementById('shopModal');
+        const buyModal = document.getElementById('buyModal');
         const modalEmoji = document.getElementById('modalEmoji');
         const modalName = document.getElementById('modalName');
         const modalStars = document.getElementById('modalStars');
@@ -1392,6 +1696,8 @@
         const tasksList = document.getElementById('tasksList');
         const achievementsList = document.getElementById('achievementsList');
         const galleryContainer = document.getElementById('galleryContainer');
+        const shopItemsGrid = document.getElementById('shopItemsGrid');
+        const buyItemContent = document.getElementById('buyItemContent');
 
         const accountAvatarLarge = document.getElementById('accountAvatarLarge');
         const avatarSelector = document.getElementById('avatarSelector');
@@ -1402,6 +1708,30 @@
         let isAnimating = false;
         let currentItems = [];
         let currentItemIndex = 0;
+
+        // Главное меню
+        document.getElementById('enterWorldBtn').addEventListener('click', () => {
+            mainMenuScreen.classList.remove('active');
+            gameWrapper.classList.add('visible');
+            document.body.classList.add('world-background');
+        });
+        document.getElementById('mainMenuSettingsBtn').addEventListener('click', () => {
+            mainMenuScreen.classList.remove('active');
+            gameWrapper.classList.add('visible');
+            document.querySelectorAll('.main-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('settingsScreen').classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-screen="settings"]').classList.add('active');
+            document.body.classList.add('settings-background');
+        });
+        document.getElementById('mainMenuLogoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            currentUser = null;
+            mainMenuScreen.classList.remove('active');
+            gameWrapper.classList.remove('visible');
+            loginScreen.classList.remove('hidden');
+            loginScreen.classList.add('active');
+        });
 
         // ---------- ОБЛАЧНЫЕ ФУНКЦИИ ----------
         async function loadCloudProgress(userId) {
@@ -1434,8 +1764,6 @@
                     daysPlayed = data.daysPlayed || 0;
                     
                     console.log('✅ Прогресс загружен из облака');
-                } else {
-                    console.log('🆕 Новый аккаунт, создаём стартовые данные');
                 }
                 headerAvatar.textContent = profileAvatar;
                 loginAvatar.textContent = profileAvatar;
@@ -1479,23 +1807,16 @@
                 
                 await loadCloudProgress(user.uid);
                 
+                loginScreen.classList.remove('active');
                 loginScreen.classList.add('hidden');
-                gameWrapper.classList.add('visible');
-                document.body.classList.add('world-background');
+                mainMenuScreen.classList.add('active');
                 updateUI();
             } catch (error) {
                 loginError.textContent = 'Ошибка входа: ' + error.message;
             }
         }
 
-        async function logout() {
-            await auth.signOut();
-            currentUser = null;
-            gameWrapper.classList.remove('visible');
-            loginScreen.classList.remove('hidden');
-        }
-
-        // ---------- НАВИГАЦИЯ ПО ЭКРАНАМ ----------
+        // ---------- НАВИГАЦИЯ ----------
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const screen = btn.dataset.screen;
@@ -1505,25 +1826,15 @@
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 
-                document.body.classList.remove('world-background', 'tasks-background', 'achievements-background', 'gacha-background', 'gallery-background', 'history-background');
+                document.body.classList.remove('world-background', 'tasks-background', 'achievements-background', 'gacha-background', 'gallery-background', 'history-background', 'settings-background');
                 
-                if (screen === 'world') {
-                    document.body.classList.add('world-background');
-                } else if (screen === 'tasks') {
-                    document.body.classList.add('tasks-background');
-                    renderTasks('daily');
-                } else if (screen === 'achievements') {
-                    document.body.classList.add('achievements-background');
-                    renderAchievements();
-                } else if (screen === 'gacha') {
-                    document.body.classList.add('gacha-background');
-                } else if (screen === 'gallery') {
-                    document.body.classList.add('gallery-background');
-                    renderGallery();
-                } else if (screen === 'history') {
-                    document.body.classList.add('history-background');
-                    renderHistoryPage();
-                }
+                if (screen === 'world') document.body.classList.add('world-background');
+                else if (screen === 'tasks') { document.body.classList.add('tasks-background'); renderTasks('daily'); }
+                else if (screen === 'achievements') { document.body.classList.add('achievements-background'); renderAchievements(); }
+                else if (screen === 'gacha') document.body.classList.add('gacha-background');
+                else if (screen === 'gallery') { document.body.classList.add('gallery-background'); renderGallery(); }
+                else if (screen === 'history') { document.body.classList.add('history-background'); renderHistoryPage(); }
+                else if (screen === 'settings') document.body.classList.add('settings-background');
                 
                 if (screen === 'history' && !dailyTasks.viewHistory.completed) {
                     dailyTasks.viewHistory.completed = true;
@@ -1563,6 +1874,9 @@
                 } else if (parts[0] === '4') {
                     const item = items4.find(i => i.name === parts.slice(1).join('-'));
                     if (item) ownedEmojis.push(item.emoji);
+                } else if (parts[0] === '3') {
+                    const item = items3.find(i => i.name === parts.slice(1).join('-'));
+                    if (item) ownedEmojis.push(item.emoji);
                 }
             });
             const uniqueEmojis = [...new Set(ownedEmojis)];
@@ -1599,7 +1913,7 @@
             });
         });
 
-        // Карта мира
+        // Карта мира + магазин
         document.querySelectorAll('.map-location').forEach(loc => {
             loc.addEventListener('click', () => {
                 const location = loc.dataset.location;
@@ -1611,10 +1925,95 @@
                     showNotification(`🌼 Собрано цветов: ${universeTasks.flowerCollect.progress}/${universeTasks.flowerCollect.target}`, 0);
                     saveCloudProgress(currentUser);
                 } else if (location === 'shop') {
-                    showNotification('🛒 Магазин скоро откроется!', 0);
+                    openShopModal();
                 }
             });
         });
+
+        function openShopModal() {
+            let html = '';
+            shopItems.forEach((item, index) => {
+                html += `<div class="shop-item-card" data-shop-item="${index}">`;
+                html += `<span class="shop-item-emoji">${item.emoji}</span>`;
+                html += `<span class="shop-item-name">${item.name}</span>`;
+                html += `<span class="shop-item-price">🌙 ${item.price}</span>`;
+                html += `</div>`;
+            });
+            shopItemsGrid.innerHTML = html;
+            shopModal.classList.add('active');
+            
+            document.querySelectorAll('.shop-item-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const index = parseInt(card.dataset.shopItem);
+                    openBuyModal(shopItems[index]);
+                });
+            });
+        }
+
+        function openBuyModal(item) {
+            let quantity = 1;
+            const maxQuantity = 20;
+            const pricePerItem = item.price;
+            
+            function updateBuyContent() {
+                const total = pricePerItem * quantity;
+                let html = `<div class="item-detail-container">`;
+                html += `<div class="item-detail-left"><div class="item-detail-emoji">${item.emoji}</div></div>`;
+                html += `<div class="item-detail-right">`;
+                html += `<div class="item-detail-name">${item.name}</div>`;
+                html += `<div class="item-detail-lore">${item.description}</div>`;
+                html += `<div class="buy-controls">`;
+                html += `<span style="color:#4a0a1a;">Количество:</span>`;
+                html += `<div class="buy-slider"><input type="range" id="buySlider" min="1" max="${maxQuantity}" value="${quantity}"></div>`;
+                html += `<span class="buy-quantity" id="buyQuantity">${quantity}</span>`;
+                html += `</div>`;
+                html += `<div style="display:flex; justify-content:space-between; margin-top:10px;">`;
+                html += `<span style="color:#4a0a1a;">Цена за шт: 🌙 ${pricePerItem}</span>`;
+                html += `<span class="buy-total" id="buyTotal">🌙 ${total}</span>`;
+                html += `</div>`;
+                html += `<button class="buy-btn" id="confirmBuyBtn">Купить</button>`;
+                html += `</div></div>`;
+                buyItemContent.innerHTML = html;
+                
+                const slider = document.getElementById('buySlider');
+                const quantitySpan = document.getElementById('buyQuantity');
+                const totalSpan = document.getElementById('buyTotal');
+                
+                slider.addEventListener('input', () => {
+                    quantity = parseInt(slider.value);
+                    quantitySpan.textContent = quantity;
+                    totalSpan.textContent = `🌙 ${pricePerItem * quantity}`;
+                });
+                
+                document.getElementById('confirmBuyBtn').addEventListener('click', () => {
+                    const totalCost = pricePerItem * quantity;
+                    if (twilight < totalCost) {
+                        showNotification('Недостаточно сумеречников!', 0);
+                        return;
+                    }
+                    twilight -= totalCost;
+                    
+                    if (item.name === 'Мешочек монет') {
+                        gems += 1000 * quantity;
+                        showNotification(`Получено ${1000 * quantity}✨!`, 0);
+                    } else {
+                        showNotification(`Куплено: ${item.name} x${quantity}!`, 0);
+                    }
+                    
+                    updateUI();
+                    saveCloudProgress(currentUser);
+                    buyModal.classList.remove('active');
+                });
+            }
+            
+            updateBuyContent();
+            buyModal.classList.add('active');
+        }
+
+        document.getElementById('closeShopBtn').addEventListener('click', () => shopModal.classList.remove('active'));
+        shopModal.addEventListener('click', e => { if (e.target === shopModal) shopModal.classList.remove('active'); });
+        document.getElementById('closeBuyBtn').addEventListener('click', () => buyModal.classList.remove('active'));
+        buyModal.addEventListener('click', e => { if (e.target === buyModal) buyModal.classList.remove('active'); });
 
         function showNotification(text, reward) {
             const notification = document.createElement('div');
@@ -1790,7 +2189,6 @@
                 bannerIcon.textContent = eventItem.emoji;
                 bannerNameEl.innerHTML = `${currentEventName} <span class="sparkle">✦</span>`;
                 bannerSub.innerHTML = `🌸 ${eventItem.emoji} Ограниченный ивент`;
-                guaranteeLabel.textContent = 'Гарант';
                 document.getElementById('eventBannerTab').classList.add('active');
                 document.getElementById('standardBannerTab').classList.remove('active');
                 document.getElementById('nextBannerBtn').textContent = '⟳ Сменить ивент';
@@ -1799,7 +2197,6 @@
                 bannerIcon.textContent = '💙';
                 bannerNameEl.innerHTML = `Стандартный <span class="sparkle">✦</span>`;
                 bannerSub.innerHTML = '💙 Постоянный баннер';
-                guaranteeLabel.textContent = 'Статус';
                 document.getElementById('standardBannerTab').classList.add('active');
                 document.getElementById('eventBannerTab').classList.remove('active');
                 document.getElementById('nextBannerBtn').textContent = '⟳ Стандарт';
@@ -1807,7 +2204,7 @@
             const activeScreen = document.querySelector('.main-screen.active');
             if (activeScreen) {
                 const screenId = activeScreen.id.replace('Screen', '');
-                document.body.classList.remove('world-background', 'tasks-background', 'achievements-background', 'gacha-background', 'gallery-background', 'history-background');
+                document.body.classList.remove('world-background', 'tasks-background', 'achievements-background', 'gacha-background', 'gallery-background', 'history-background', 'settings-background');
                 document.body.classList.add(screenId + '-background');
             }
             updateTimeBadge();
@@ -1928,30 +2325,18 @@
                         if (guaranteed) { win = true; guaranteed = false; }
                         else { win = Math.random() < 0.5; if (!win) guaranteed = true; }
                         selectedItem = win ? items5Event[currentEventName] : items5Standard[Math.floor(Math.random() * items5Standard.length)];
-                        if (win) {
-                            duplicateCounts[currentEventName] = (duplicateCounts[currentEventName] || 0) + 1;
-                        }
+                        if (win) duplicateCounts[currentEventName] = (duplicateCounts[currentEventName] || 0) + 1;
                     } else {
                         selectedItem = items5Standard[Math.floor(Math.random() * items5Standard.length)];
                     }
                     pity5 = 0; pity4 = 0;
                     
-                    if (!weeklyTasks.get5star.completed) {
-                        weeklyTasks.get5star.completed = true;
-                        showNotification('🌟 Задание: Получить 5★ предмет!', 0);
-                    }
-                    if (!achievements.first5star.completed) {
-                        achievements.first5star.completed = true;
-                        showNotification('⭐ Достижение: Счастливчик!', achievements.first5star.reward);
-                        gems += achievements.first5star.reward;
-                    }
+                    if (!weeklyTasks.get5star.completed) { weeklyTasks.get5star.completed = true; showNotification('🌟 Задание: Получить 5★ предмет!', 0); }
+                    if (!achievements.first5star.completed) { achievements.first5star.completed = true; showNotification('⭐ Достижение: Счастливчик!', achievements.first5star.reward); gems += achievements.first5star.reward; }
                 } else if (rarity === 4) {
                     selectedItem = items4[Math.floor(Math.random() * items4.length)];
                     pity4 = 0;
-                    if (!weeklyTasks.get4star.completed) {
-                        weeklyTasks.get4star.completed = true;
-                        showNotification('✨ Задание: Получить 4★ предмет!', 0);
-                    }
+                    if (!weeklyTasks.get4star.completed) { weeklyTasks.get4star.completed = true; showNotification('✨ Задание: Получить 4★ предмет!', 0); }
                 } else {
                     selectedItem = items3[Math.floor(Math.random() * items3.length)];
                 }
@@ -1960,53 +2345,27 @@
                 items.push(item);
             }
             
-            if (!dailyTasks.wish1.completed) {
-                dailyTasks.wish1.completed = true;
-                gems += dailyTasks.wish1.reward;
-                showNotification(dailyTasks.wish1.name, dailyTasks.wish1.reward);
-            }
+            if (!dailyTasks.wish1.completed) { dailyTasks.wish1.completed = true; gems += dailyTasks.wish1.reward; showNotification(dailyTasks.wish1.name, dailyTasks.wish1.reward); }
             weeklyTasks.wish20.progress = Math.min(totalWishes, 20);
-            if (totalWishes >= 20 && !weeklyTasks.wish20.completed) {
-                weeklyTasks.wish20.completed = true;
-            }
+            if (totalWishes >= 20 && !weeklyTasks.wish20.completed) weeklyTasks.wish20.completed = true;
             weeklyTasks.spend5000.progress = Math.min(totalSpent, 5000);
-            if (totalSpent >= 5000 && !weeklyTasks.spend5000.completed) {
-                weeklyTasks.spend5000.completed = true;
-            }
+            if (totalSpent >= 5000 && !weeklyTasks.spend5000.completed) weeklyTasks.spend5000.completed = true;
             
-            if (!achievements.firstWish.completed && totalWishes > 0) {
-                achievements.firstWish.completed = true;
-                showNotification('🌸 Достижение: Первая молитва!', achievements.firstWish.reward);
-                gems += achievements.firstWish.reward;
-            }
+            if (!achievements.firstWish.completed && totalWishes > 0) { achievements.firstWish.completed = true; showNotification('🌸 Достижение: Первая молитва!', achievements.firstWish.reward); gems += achievements.firstWish.reward; }
             
             const skipToItems = await showStarAnimation(hasLegendary);
             updateUI();
             currentItems = items;
             currentItemIndex = 0;
             
-            if (skipToItems) {
-                showItemsList(items);
-            } else if (items.length > 0) {
-                showSingleItem(items[0]);
-            }
+            if (skipToItems) showItemsList(items);
+            else if (items.length > 0) showSingleItem(items[0]);
             
             saveCloudProgress(currentUser);
         }
 
-        function goToPrevItem() {
-            if (currentItemIndex > 0) {
-                currentItemIndex--;
-                updateModalContent(currentItems[currentItemIndex]);
-            }
-        }
-
-        function goToNextItem() {
-            if (currentItemIndex < currentItems.length - 1) {
-                currentItemIndex++;
-                updateModalContent(currentItems[currentItemIndex]);
-            }
-        }
+        function goToPrevItem() { if (currentItemIndex > 0) { currentItemIndex--; updateModalContent(currentItems[currentItemIndex]); } }
+        function goToNextItem() { if (currentItemIndex < currentItems.length - 1) { currentItemIndex++; updateModalContent(currentItems[currentItemIndex]); } }
 
         function renderHistoryPage() {
             const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE) || 1;
@@ -2033,7 +2392,7 @@
             const all5Event = Object.values(items5Event).map(i => ({ ...i, rarity: 5, isEvent: true }));
             const all5Standard = items5Standard.map(i => ({ ...i, rarity: 5, isEvent: false }));
             const all4 = items4.map(i => ({ ...i, rarity: 4 }));
-            const all3 = items3.map(i => ({ ...i, rarity: 3 }));
+            const all3 = items3.slice(0, 16).map(i => ({ ...i, rarity: 3 }));
             let html = '';
             [ { title: '🌸 5★ Ивентовые', items: all5Event }, { title: '💙 5★ Стандартные', items: all5Standard }, { title: '✨ 4★ Эпические', items: all4 }, { title: '🌸 3★ Обычные', items: all3 } ].forEach((section, idx) => {
                 if (idx > 0) html += '<div style="height:2px; background:rgba(139,37,64,0.2); margin:20px 0;"></div>';
@@ -2056,10 +2415,7 @@
                     const name = item.dataset.itemName;
                     const rarity = parseInt(item.dataset.itemRarity);
                     const owned = ownedItems.has(`${rarity}-${name}`);
-                    if (!owned) {
-                        showNotification('🔒 Предмет ещё не получен!', 0);
-                        return;
-                    }
+                    if (!owned) { showNotification('🔒 Предмет ещё не получен!', 0); return; }
                     showGalleryItemDetail(name, rarity);
                 });
             });
@@ -2067,13 +2423,9 @@
 
         function showGalleryItemDetail(name, rarity) {
             let item;
-            if (rarity === 5) {
-                item = items5Event[name] || items5Standard.find(i => i.name === name);
-            } else if (rarity === 4) {
-                item = items4.find(i => i.name === name);
-            } else {
-                item = items3.find(i => i.name === name);
-            }
+            if (rarity === 5) item = items5Event[name] || items5Standard.find(i => i.name === name);
+            else if (rarity === 4) item = items4.find(i => i.name === name);
+            else item = items3.find(i => i.name === name);
             if (!item) return;
             
             const isEventItem = items5Event[name] !== undefined;
@@ -2095,8 +2447,7 @@
                     let shardClass = 'constellation-shard';
                     if (claimed) shardClass += ' claimed';
                     else if (unlocked) shardClass += ' unlocked';
-                    html += `<div class="${shardClass}" data-shard-index="${i}" data-item-name="${name}">`;
-                    html += item.emoji;
+                    html += `<div class="${shardClass}" data-shard-index="${i}" data-item-name="${name}">${item.emoji}`;
                     if (!unlocked && !claimed) html += `<span class="lock-icon">🔒</span>`;
                     html += `</div>`;
                 }
@@ -2113,9 +2464,9 @@
                     const shardIndex = parseInt(shard.dataset.shardIndex);
                     if (!shardsClaimed[itemName][shardIndex]) {
                         shardsClaimed[itemName][shardIndex] = true;
-                        twilight += 100;
+                        gems += 20;
                         updateUI();
-                        showNotification(`🌙 +100 сумеречников за осколок ${itemName}!`, 0);
+                        showNotification(`✨ +20 искр за осколок ${itemName}!`, 20);
                         saveCloudProgress(currentUser);
                         galleryItemModal.classList.remove('active');
                     }
@@ -2130,13 +2481,7 @@
             isEventBanner = isEvent;
             updateBannerUI();
             updateUI();
-            
-            if (!dailyTasks.switchBanner.completed) {
-                dailyTasks.switchBanner.completed = true;
-                gems += dailyTasks.switchBanner.reward;
-                showNotification(dailyTasks.switchBanner.name, dailyTasks.switchBanner.reward);
-            }
-            
+            if (!dailyTasks.switchBanner.completed) { dailyTasks.switchBanner.completed = true; gems += dailyTasks.switchBanner.reward; showNotification(dailyTasks.switchBanner.name, dailyTasks.switchBanner.reward); }
             saveCloudProgress(currentUser);
         }
 
@@ -2176,19 +2521,26 @@
                 profileName.textContent = user.displayName || 'Игрок';
                 accountNickname.value = user.displayName || '';
                 await loadCloudProgress(user.uid);
+                loginScreen.classList.remove('active');
                 loginScreen.classList.add('hidden');
-                gameWrapper.classList.add('visible');
-                document.body.classList.add('world-background');
+                mainMenuScreen.classList.add('active');
                 checkDailyReset();
             } else {
                 loginScreen.classList.remove('hidden');
+                loginScreen.classList.add('active');
+                mainMenuScreen.classList.remove('active');
                 gameWrapper.classList.remove('visible');
             }
         });
 
         function init() {
             loginBtn.addEventListener('click', loginWithGoogle);
-            logoutBtn.addEventListener('click', logout);
+            logoutBtn.addEventListener('click', async () => {
+                await auth.signOut();
+                currentUser = null;
+                gameWrapper.classList.remove('visible');
+                mainMenuScreen.classList.remove('active');
+            });
             
             document.getElementById('eventBannerTab').addEventListener('click', () => switchBanner(true));
             document.getElementById('standardBannerTab').addEventListener('click', () => switchBanner(false));
