@@ -1,0 +1,2220 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌸 Солнечная Гача · Облачное сохранение</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #f06292 100%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Quicksand', 'Segoe UI', system-ui, sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* Фоны для разных экранов */
+        body.world-background {
+            background: url('https://i.ibb.co/84sqsLc4/image.jpg') center/cover fixed !important;
+        }
+        body.tasks-background {
+            background: url('https://i.ibb.co/7t2HmRQs/image.jpg') center/cover fixed !important;
+        }
+        body.achievements-background {
+            background: url('https://i.ibb.co/Xrx3sG83/image.jpg') center/cover fixed !important;
+        }
+        body.gacha-background {
+            background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important;
+        }
+        body.gallery-background {
+            background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important;
+        }
+        body.history-background {
+            background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important;
+        }
+
+        /* Затемнение для читаемости */
+        body.world-background::before,
+        body.tasks-background::before,
+        body.achievements-background::before,
+        body.gacha-background::before,
+        body.gallery-background::before,
+        body.history-background::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 220, 220, 0.3);
+            backdrop-filter: blur(3px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body.standard-banner {
+            background: linear-gradient(145deg, #e3f2fd 0%, #bbdefb 30%, #90caf9 70%, #64b5f6 100%);
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(255, 220, 240, 0.2) 0%, transparent 30%),
+                        radial-gradient(circle at 80% 70%, rgba(255, 200, 220, 0.15) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgPulse 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* --- ВЕРХНЯЯ ПАНЕЛЬ С ВАЛЮТАМИ --- */
+        .top-currency-panel {
+            position: fixed;
+            top: 20px;
+            right: 120px;
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+            background: rgba(255, 245, 250, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .currency-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #4a0a1a;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .currency-item span {
+            font-size: 1.5rem;
+        }
+
+        /* --- КНОПКА АККАУНТА --- */
+        .account-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 245, 250, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 6px 0 #8b2540, 0 8px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 100;
+            color: #4a0a1a;
+        }
+
+        .account-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0 #8b2540, 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        /* --- БОКОВАЯ ПАНЕЛЬ НАВИГАЦИИ --- */
+        .nav-sidebar {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 245, 250, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 6px 0 #8b2540, 0 8px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: #4a0a1a;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0 #8b2540, 0 12px 20px rgba(0,0,0,0.15);
+        }
+
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(2px);
+            box-shadow: 0 4px 0 #8b2540, 0 6px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-tooltip {
+            position: absolute;
+            left: 70px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4a0a1a;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            border: 1px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+
+        .nav-btn:hover .nav-tooltip {
+            opacity: 1;
+            visibility: visible;
+            left: 75px;
+        }
+
+        /* --- АНИМАЦИЯ ЗВЕЗДЫ --- */
+        .star-animation-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .star-animation-overlay.active { display: flex; }
+
+        .star-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .star-svg {
+            width: 200px;
+            height: 200px;
+            filter: drop-shadow(0 0 30px rgba(100, 181, 246, 0.8));
+            animation: starRotate 3s ease-in-out infinite;
+        }
+        .star-svg.gold { filter: drop-shadow(0 0 40px #ffd54f); }
+        @keyframes starRotate {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .star-text {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 0 2px 10px rgba(100, 181, 246, 0.8);
+            font-weight: 500;
+            letter-spacing: 3px;
+            white-space: nowrap;
+        }
+        .star-text.gold { text-shadow: 0 2px 15px #ffd54f; }
+
+        .skip-animation-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 40px;
+            padding: 12px 24px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            z-index: 2010;
+            transition: 0.2s;
+        }
+        .skip-animation-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* --- ЭКРАН ВХОДА --- */
+        .login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(15px);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-screen.hidden { display: none; }
+        .login-card {
+            background: linear-gradient(145deg, #fff0f5, #fce4ec);
+            border-radius: 60px; padding: 45px 40px; max-width: 420px; width: 90%;
+            text-align: center; border: 3px solid rgba(255, 255, 255, 0.8);
+        }
+        .login-avatar {
+            width: 100px; height: 100px; margin: 0 auto 20px;
+            background: radial-gradient(circle at 30% 30%, #ffe082, #ffb74d);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 3.5rem; box-shadow: 0 8px 0 #8b2540; border: 3px solid white;
+        }
+        .login-title { font-size: 2.2rem; color: #4a0a1a; margin-bottom: 10px; }
+        .login-subtitle { color: #6b1a2a; margin-bottom: 30px; }
+        .login-btn {
+            width: 100%; background: linear-gradient(145deg, #f8bbd0, #f48fb1);
+            border: none; border-radius: 50px; padding: 18px; color: white;
+            font-size: 1.3rem; font-weight: 600; cursor: pointer;
+            box-shadow: 0 6px 0 #8b2540; border: 1.5px solid white; margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .login-btn img {
+            width: 24px;
+            height: 24px;
+        }
+        .error-message { color: #8b0000; font-size: 0.9rem; margin-top: 10px; }
+
+        /* --- ИГРОВОЙ ЭКРАН --- */
+        .game-wrapper {
+            position: relative;
+            z-index: 10;
+            max-width: 580px;
+            width: 100%;
+            margin-left: 60px;
+            display: none;
+        }
+        .game-wrapper.visible { display: block; }
+
+        .profile-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+        .profile-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 245, 250, 0.5);
+            backdrop-filter: blur(10px);
+            padding: 8px 18px 8px 12px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .profile-avatar {
+            width: 40px; height: 40px; background: radial-gradient(circle at 30% 30%, #ffe082, #ffb74d);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; border: 2px solid white;
+        }
+        .profile-name { color: #4a0a1a; font-weight: 600; font-size: 1rem; }
+        .logout-btn {
+            background: rgba(255, 245, 250, 0.5); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.6); border-radius: 40px;
+            padding: 8px 18px; color: #4a0a1a; font-weight: 600; cursor: pointer;
+            margin-left: 10px;
+        }
+
+        /* --- ПЕРЕКЛЮЧАТЕЛЬ ОСНОВНЫХ ЭКРАНОВ --- */
+        .main-screen {
+            display: none;
+        }
+        .main-screen.active {
+            display: block;
+        }
+
+        /* --- КАРТА МИРА --- */
+        .world-map {
+            background: rgba(255, 245, 250, 0.3);
+            backdrop-filter: blur(15px);
+            border-radius: 48px;
+            padding: 30px;
+            min-height: 500px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-title {
+            font-size: 2rem;
+            color: #4a0a1a;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 5px rgba(255,255,255,0.5);
+        }
+
+        .map-locations {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .map-location {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 20px 25px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .map-location:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0 rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .location-icon {
+            font-size: 3rem;
+            width: 60px;
+            text-align: center;
+        }
+
+        .location-info h3 {
+            font-size: 1.5rem;
+            color: #4a0a1a;
+            margin-bottom: 5px;
+        }
+
+        .location-info p {
+            color: #6b1a2a;
+            font-size: 0.9rem;
+        }
+
+        /* --- ГАЧА ЭКРАН --- */
+        .gacha-screen .game-card {
+            background: rgba(255, 245, 250, 0.35);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 24px 32px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 45px rgba(240, 98, 146, 0.15);
+        }
+
+        .shimmer-banner {
+            background: linear-gradient(110deg, rgba(255,220,240,0.5), rgba(255,240,245,0.8), rgba(255,200,220,0.6), rgba(255,235,245,0.85), rgba(255,220,240,0.5));
+            background-size: 300% 100%;
+            border-radius: 60px;
+            padding: 16px 22px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,255,255,0.7);
+            animation: shimmerMove 8s ease-in-out infinite;
+        }
+        @keyframes shimmerMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .banner-content { display: flex; align-items: center; justify-content: space-between; }
+        .banner-left { display: flex; align-items: center; gap: 15px; }
+        .character-icon {
+            width: 55px; height: 55px;
+            background: radial-gradient(circle at 30% 30%, #ffe0f0, #f8bbd0);
+            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+            font-size: 36px; box-shadow: 0 5px 0 #8b2540;
+            border: 2px solid white; transform: rotate(-5deg);
+        }
+        .banner-text h3 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #4a0a1a;
+        }
+        .banner-sub {
+            font-size: 0.9rem;
+            color: #6b1a2a;
+            opacity: 0.8;
+        }
+        .time-badge {
+            background: rgba(255, 255, 255, 0.7); padding: 8px 14px; border-radius: 40px;
+            font-size: 0.9rem; font-weight: 600; color: #4a0a1a;
+        }
+
+        .pity-glass-panel { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .pity-item {
+            background: rgba(255, 245, 250, 0.4); backdrop-filter: blur(12px);
+            border-radius: 28px; padding: 14px 6px; text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .pity-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #4a0a1a;
+            opacity: 0.9;
+        }
+        .pity-number {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #4a0a1a;
+        }
+        .pity-max {
+            font-size: 0.8rem;
+            color: #6b1a2a;
+        }
+        .fifty-badge {
+            background: rgba(255, 235, 245, 0.5); border-radius: 40px;
+            padding: 4px 10px; font-size: 0.9rem; margin-top: 5px;
+            color: #4a0a1a;
+        }
+
+        .currency-row { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 25px; }
+        .currency-card {
+            flex: 1; background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(8px); border-radius: 50px; padding: 12px 16px;
+            display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.7);
+        }
+        .currency-icon { font-size: 2rem; }
+        .currency-value {
+            font-size: 1.8rem;
+            font-weight: 400;
+            color: #4a0a1a;
+        }
+
+        .wish-primary {
+            width: 100%; background: linear-gradient(145deg, #f8bbd0, #f48fb1, #f06292);
+            border: none; border-radius: 60px; padding: 18px 20px;
+            color: white; font-size: 1.5rem; font-weight: 600;
+            box-shadow: 0 12px 0 #8b2540; cursor: pointer;
+            margin-bottom: 12px;
+        }
+        .wish-primary:active { transform: translateY(8px); box-shadow: 0 4px 0 #8b2540; }
+        .wish-primary:disabled { opacity: 0.5; transform: none; }
+
+        .button-group { display: flex; gap: 12px; }
+        .btn-secondary {
+            flex: 1; background: rgba(255, 240, 245, 0.6);
+            border: 1.5px solid white; border-radius: 50px; padding: 14px 0;
+            font-size: 1.1rem; font-weight: 600; color: #4a0a1a;
+            box-shadow: 0 6px 0 #8b2540; cursor: pointer;
+        }
+
+        .footer-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-small {
+            background: rgba(255, 245, 250, 0.4); border: 1px solid white;
+            color: #4a0a1a; padding: 10px; border-radius: 30px;
+            font-size: 0.9rem; cursor: pointer; flex: 1;
+        }
+
+        .banner-switch { display: flex; gap: 10px; margin-bottom: 15px; }
+        .banner-tab {
+            flex: 1; padding: 12px; border-radius: 30px;
+            background: rgba(255,255,255,0.3); color: #4a0a1a;
+            font-weight: 600; cursor: pointer; text-align: center;
+        }
+        .banner-tab.active {
+            background: rgba(255,255,255,0.7);
+            box-shadow: 0 4px 0 #8b2540;
+        }
+
+        /* --- ЗАДАНИЯ (ДНЕВНИК) --- */
+        .tasks-screen {
+            background: rgba(255, 245, 250, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 24px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            min-height: 500px;
+        }
+
+        .tasks-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .task-tab {
+            flex: 1;
+            padding: 12px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.3);
+            color: #4a0a1a;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+            border: 1.5px solid rgba(255,255,255,0.5);
+        }
+        .task-tab.active {
+            background: rgba(255,255,255,0.7);
+            box-shadow: 0 4px 0 #8b2540;
+        }
+
+        .tasks-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .task-item {
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 25px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .task-item.completed {
+            opacity: 0.7;
+            background: rgba(200, 230, 200, 0.4);
+        }
+        .task-icon {
+            font-size: 1.8rem;
+            width: 45px;
+            text-align: center;
+        }
+        .task-info {
+            flex: 1;
+        }
+        .task-name {
+            font-weight: 600;
+            color: #4a0a1a;
+            margin-bottom: 5px;
+        }
+        .task-progress {
+            font-size: 0.8rem;
+            color: #6b1a2a;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 3px;
+            margin-top: 5px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8b2540, #6b1a2a);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .task-reward {
+            font-weight: 600;
+            color: #8b2540;
+            font-size: 1.1rem;
+        }
+        .claim-btn {
+            background: linear-gradient(145deg, #8b2540, #6b1a2a);
+            border: none;
+            border-radius: 30px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #4a0a1a;
+            font-size: 0.8rem;
+        }
+
+        /* Галерея */
+        .gallery-screen {
+            background: rgba(255, 245, 250, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 28px 24px;
+            border: 1.5px solid rgba(255, 255, 255, 0.5);
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .gallery-section h3 {
+            color: #4a0a1a;
+            margin: 20px 0 15px;
+        }
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .gallery-item {
+            background: rgba(255,255,255,0.4);
+            border-radius: 20px;
+            padding: 15px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            color: #4a0a1a;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+            background: rgba(255,255,255,0.6);
+        }
+        .gallery-item.locked { opacity: 0.5; }
+        .gallery-lock { position: absolute; top: 5px; right: 8px; }
+        .gallery-emoji { font-size: 2.5rem; }
+        .gallery-name { font-size: 0.7rem; text-align: center; }
+
+        /* История */
+        .history-list { max-height: 400px; overflow-y: auto; }
+        .history-modal-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 40px;
+            border-left: 8px solid;
+            margin-bottom: 8px;
+            color: #4a0a1a;
+        }
+
+        /* Пагинация истории */
+        .history-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .history-page-btn {
+            background: rgba(255, 240, 245, 0.6);
+            border: 1.5px solid white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            color: #4a0a1a;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #8b2540;
+            transition: all 0.1s;
+            font-size: 0.9rem;
+        }
+        .history-page-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #8b2540;
+        }
+        .history-page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 0 #8b2540;
+        }
+        .history-page-indicator {
+            color: #4a0a1a;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 30px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* --- МОДАЛКА ПРЕДМЕТА ГАЛЕРЕИ --- */
+        .gallery-item-modal .modal-content {
+            max-width: 450px;
+            padding: 30px;
+        }
+        .item-detail-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .item-detail-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .item-detail-emoji {
+            font-size: 5rem;
+            background: rgba(255,255,255,0.4);
+            padding: 15px;
+            border-radius: 30px;
+            border: 2px solid white;
+        }
+        .item-detail-right {
+            flex: 1;
+            text-align: left;
+        }
+        .item-detail-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #4a0a1a;
+            margin-bottom: 5px;
+        }
+        .item-detail-stars {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            color: #ffb300;
+            margin-bottom: 15px;
+        }
+        .item-detail-lore {
+            color: #4a0a1a;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 15px;
+        }
+        .constellation-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .constellation-shard {
+            width: 45px;
+            height: 45px;
+            background: rgba(100, 100, 100, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            border: 2px solid #888;
+            color: #888;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .constellation-shard.unlocked {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            color: #ffd700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        .constellation-shard.unlocked:hover {
+            transform: scale(1.1);
+            background: rgba(255, 215, 0, 0.5);
+        }
+        .constellation-shard.claimed {
+            background: rgba(139, 37, 64, 0.5);
+            border-color: #8b2540;
+            color: #8b2540;
+            cursor: default;
+            opacity: 0.7;
+        }
+        .constellation-shard .lock-icon {
+            position: absolute;
+            font-size: 1rem;
+            bottom: -5px;
+            right: -5px;
+            background: #666;
+            border-radius: 50%;
+            padding: 3px;
+            color: white;
+        }
+        .constellation-shard.unlocked .lock-icon,
+        .constellation-shard.claimed .lock-icon {
+            display: none;
+        }
+
+        /* Модалки */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(8px);
+            display: none; justify-content: center; align-items: center; z-index: 1500;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .gacha-modal {
+            background: linear-gradient(145deg, #fff0f5, #fce4ec);
+            border-radius: 60px; padding: 40px; max-width: 400px; width: 90%;
+            text-align: center; border: 3px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 30px 60px rgba(240, 98, 146, 0.4);
+            position: relative; animation: modalPop 0.3s ease;
+        }
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute; top: 20px; right: 25px;
+            font-size: 2rem; cursor: pointer; color: #4a0a1a;
+            width: 40px; height: 40px; display: flex; align-items: center;
+            justify-content: center; border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .modal-item-emoji { font-size: 6rem; margin: 20px 0 10px; }
+        .modal-item-name { font-size: 2rem; font-weight: 600; color: #4a0a1a; }
+        .modal-stars { font-size: 1.8rem; letter-spacing: 8px; margin-bottom: 20px; }
+        .modal-rarity-badge {
+            display: inline-block; padding: 8px 25px; border-radius: 40px;
+            font-weight: 600; margin-bottom: 20px;
+        }
+        .rarity-5-badge { background: linear-gradient(145deg, #ffd54f, #ffb300); color: #4a2000; }
+
+        .modal-nav {
+            display: flex; justify-content: center; gap: 30px; margin-top: 20px;
+        }
+        .nav-arrow {
+            width: 50px; height: 50px; background: rgba(255,255,255,0.5);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; cursor: pointer; color: #4a0a1a;
+        }
+        .nav-arrow.disabled { opacity: 0.3; pointer-events: none; }
+        .item-counter { color: #4a0a1a; font-weight: 600; }
+
+        .items-list-modal { max-width: 500px; max-height: 70vh; overflow-y: auto; padding: 30px 25px; }
+        .items-list-item {
+            display: flex; align-items: center; gap: 15px; padding: 15px 20px;
+            background: rgba(255,255,255,0.5); border-radius: 20px;
+            border-left: 8px solid; margin-bottom: 10px;
+        }
+        .items-list-item.rarity-5 { border-left-color: #ffb74d; }
+        .items-list-item.rarity-4 { border-left-color: #ce93d8; }
+        .items-list-item.rarity-3 { border-left-color: #b39ddb; }
+
+        /* --- МОДАЛКА АККАУНТА --- */
+        .account-modal {
+            max-width: 450px;
+            padding: 30px;
+        }
+        .account-avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .account-avatar-large {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle at 30% 30%, #ffe082, #ffb74d);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            border: 3px solid white;
+            margin-bottom: 10px;
+        }
+        .avatar-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .avatar-option {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 2px solid white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .avatar-option:hover {
+            transform: scale(1.1);
+            background: rgba(255,255,255,0.8);
+        }
+        .avatar-option.selected {
+            border: 3px solid #8b2540;
+            box-shadow: 0 0 15px #8b2540;
+        }
+        .account-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.7);
+            margin-bottom: 10px;
+            outline: none;
+            color: #4a0a1a;
+        }
+        .account-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            margin-bottom: 15px;
+            outline: none;
+            color: #4a0a1a;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        .save-account-btn {
+            width: 100%;
+            background: linear-gradient(145deg, #8b2540, #6b1a2a);
+            border: none;
+            border-radius: 40px;
+            padding: 14px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #4a0a1a;
+        }
+    </style>
+</head>
+<body class="event-banner">
+
+<!-- ВЕРХНЯЯ ПАНЕЛЬ С ВАЛЮТАМИ -->
+<div class="top-currency-panel" id="topCurrencyPanel">
+    <div class="currency-item"><span>✨</span> <span id="topGems">16000</span></div>
+    <div class="currency-item"><span>🌙</span> <span id="topTwilight">0</span></div>
+</div>
+
+<!-- КНОПКА АККАУНТА -->
+<div class="account-btn" id="accountBtn">👤</div>
+
+<!-- БОКОВАЯ ПАНЕЛЬ НАВИГАЦИИ -->
+<div class="nav-sidebar">
+    <div class="nav-btn active" data-screen="world">
+        <span>🌍</span>
+        <span class="nav-tooltip">Вселенная</span>
+    </div>
+    <div class="nav-btn" data-screen="tasks">
+        <span>📋</span>
+        <span class="nav-tooltip">Дневник</span>
+    </div>
+    <div class="nav-btn" data-screen="achievements">
+        <span>🏆</span>
+        <span class="nav-tooltip">Достижения</span>
+    </div>
+    <div class="nav-btn" data-screen="gacha">
+        <span>🌸</span>
+        <span class="nav-tooltip">Молитвы</span>
+    </div>
+    <div class="nav-btn" data-screen="gallery">
+        <span>🖼️</span>
+        <span class="nav-tooltip">Галерея</span>
+    </div>
+    <div class="nav-btn" data-screen="history">
+        <span>📜</span>
+        <span class="nav-tooltip">История</span>
+    </div>
+</div>
+
+<!-- АНИМАЦИЯ ЗВЕЗДЫ -->
+<div class="star-animation-overlay" id="starAnimation">
+    <div class="star-container">
+        <svg class="star-svg" id="starSvg" viewBox="0 0 100 100">
+            <polygon points="50,5 61,35 93,35 67,53 78,85 50,67 22,85 33,53 7,35 39,35" fill="#64b5f6" stroke="#fff" stroke-width="1.5"/>
+        </svg>
+        <div class="star-text" id="starText">✨ Молитва ✨</div>
+    </div>
+    <button class="skip-animation-btn" id="skipStarBtn">Пропустить ⏭</button>
+</div>
+
+<!-- ЭКРАН ВХОДА -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-card">
+        <div class="login-avatar" id="loginAvatar">🌸</div>
+        <div class="login-title">Solar Wish</div>
+        <div class="login-subtitle">Войдите через Google, чтобы сохранять прогресс в облаке</div>
+        <button class="login-btn" id="loginBtn">
+            <span>G</span> Войти через Google
+        </button>
+        <div class="error-message" id="loginError"></div>
+    </div>
+</div>
+
+<!-- ИГРОВОЙ ЭКРАН -->
+<div class="game-wrapper" id="gameWrapper">
+    <div class="profile-header">
+        <div class="profile-info">
+            <div class="profile-avatar" id="headerAvatar">🌸</div>
+            <span class="profile-name" id="profileName">Игрок</span>
+        </div>
+        <button class="logout-btn" id="logoutBtn">Выйти</button>
+    </div>
+
+    <!-- ЭКРАН КАРТЫ МИРА -->
+    <div class="main-screen active" id="worldScreen">
+        <div class="world-map">
+            <h2 class="map-title">🌍 Карта мира</h2>
+            <div class="map-locations">
+                <div class="map-location" data-location="city">
+                    <span class="location-icon">🏰</span>
+                    <div class="location-info">
+                        <h3>Солнечный город</h3>
+                        <p>Столица королевства, центр торговли и магии</p>
+                    </div>
+                </div>
+                <div class="map-location" data-location="tavern">
+                    <span class="location-icon">🍺</span>
+                    <div class="location-info">
+                        <h3>Таверна «Лунный свет»</h3>
+                        <p>Место встречи искателей приключений</p>
+                    </div>
+                </div>
+                <div class="map-location" data-location="forest">
+                    <span class="location-icon">🌲</span>
+                    <div class="location-info">
+                        <h3>Шепчущий лес</h3>
+                        <p>Древний лес, полный тайн и загадок</p>
+                    </div>
+                </div>
+                <div class="map-location" data-location="shop">
+                    <span class="location-icon">🛒</span>
+                    <div class="location-info">
+                        <h3>Магазин</h3>
+                        <p>Покупка редких предметов и ресурсов</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ЗАДАНИЙ -->
+    <div class="main-screen" id="tasksScreen">
+        <div class="tasks-screen">
+            <div class="tasks-tabs">
+                <div class="task-tab active" data-tab="daily">📅 День</div>
+                <div class="task-tab" data-tab="weekly">📆 Неделя</div>
+                <div class="task-tab" data-tab="universe">🌌 Вселенная</div>
+            </div>
+            <div class="tasks-list" id="tasksList"></div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ДОСТИЖЕНИЙ -->
+    <div class="main-screen" id="achievementsScreen">
+        <div class="tasks-screen" style="padding-top: 20px;">
+            <div class="tasks-list" id="achievementsList"></div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ГАЧИ -->
+    <div class="main-screen" id="gachaScreen">
+        <div class="gacha-screen">
+            <div class="game-card">
+                <div class="banner-switch">
+                    <div class="banner-tab active" id="eventBannerTab">🌸 Ивентовый</div>
+                    <div class="banner-tab" id="standardBannerTab">💙 Стандартный</div>
+                </div>
+
+                <div class="shimmer-banner">
+                    <div class="banner-content">
+                        <div class="banner-left">
+                            <div class="character-icon" id="bannerIcon">🌸</div>
+                            <div class="banner-text">
+                                <h3 id="bannerName">Хана · Цветение <span class="sparkle">✦</span></h3>
+                                <div class="banner-sub" id="bannerSub">🌸 Ограниченный ивент</div>
+                            </div>
+                        </div>
+                        <div class="time-badge" id="timeBadge">⏳ 10д 00ч</div>
+                    </div>
+                </div>
+
+                <div class="pity-glass-panel">
+                    <div class="pity-item"><div class="pity-label">До 5★</div><div class="pity-number" id="pity5Display">0</div><div class="pity-max">/90</div></div>
+                    <div class="pity-item"><div class="pity-label">До 4★</div><div class="pity-number" id="pity4Display">0</div><div class="pity-max">/10</div></div>
+                    <div class="pity-item"><div class="pity-label" id="guaranteeLabel">Гарант</div><div class="pity-number" style="font-size:1.8rem;" id="guaranteeDisplay">⚖️</div><div class="fifty-badge" id="guaranteeText">50/50</div></div>
+                </div>
+
+                <div class="currency-row">
+                    <div class="currency-card"><span class="currency-icon">✨</span><span class="currency-value" id="gemAmount">16000</span></div>
+                    <div class="currency-card"><span class="currency-icon">🎀</span><span class="currency-value" id="ticketCount">100</span></div>
+                </div>
+
+                <button class="wish-primary" id="wish1Btn">🌸 МОЛИТВА х1 (160✨)</button>
+                <div class="button-group">
+                    <button class="btn-secondary" id="wish10Btn">10x Молитв (1600✨)</button>
+                    <button class="btn-secondary" id="nextBannerBtn">⟳ Сменить ивент</button>
+                </div>
+                <div class="footer-actions">
+                    <button class="btn-small" id="resetBtn">🔄 Сброс</button>
+                    <button class="btn-small" id="addGemsBtn">✨ +1600</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН ГАЛЕРЕИ -->
+    <div class="main-screen" id="galleryScreen">
+        <div class="gallery-screen" id="galleryContainer"></div>
+    </div>
+
+    <!-- ЭКРАН ИСТОРИИ -->
+    <div class="main-screen" id="historyScreen">
+        <div class="tasks-screen">
+            <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">📜 История молитв</h3>
+            <div class="history-list" id="historyListContainer"></div>
+            <div class="history-pagination" id="historyPagination">
+                <button class="history-page-btn" id="prevPageBtn" disabled>← Назад</button>
+                <span class="history-page-indicator" id="pageIndicator">1 / 1</span>
+                <button class="history-page-btn" id="nextPageBtn" disabled>Вперёд →</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛКА ОДНОГО ПРЕДМЕТА -->
+<div class="modal-overlay" id="gachaModal">
+    <div class="gacha-modal" id="modalContent">
+        <div class="modal-close" id="closeModalBtn">&times;</div>
+        <div class="modal-item-emoji" id="modalEmoji">🌸</div>
+        <div class="modal-item-name" id="modalName">Хана · Цветение</div>
+        <div class="modal-stars" id="modalStars">★★★★★</div>
+        <div class="modal-rarity-badge" id="modalRarityBadge">5★ ЛЕГЕНДАРНЫЙ</div>
+        <div class="modal-nav">
+            <div class="nav-arrow" id="prevItemBtn">←</div>
+            <div class="item-counter" id="itemCounter">1 / 10</div>
+            <div class="nav-arrow" id="nextItemBtn">→</div>
+        </div>
+    </div>
+</div>
+
+<!-- МОДАЛКА СПИСКА ПРЕДМЕТОВ -->
+<div class="modal-overlay" id="itemsListModal">
+    <div class="gacha-modal items-list-modal">
+        <div class="modal-close" id="closeItemsListBtn">&times;</div>
+        <div class="items-list-header" style="font-size:1.8rem; color:#4a0a1a; margin-bottom:20px;">✨ Выпавшие предметы</div>
+        <div id="itemsListGrid"></div>
+    </div>
+</div>
+
+<!-- МОДАЛКА ПРЕДМЕТА ГАЛЕРЕИ -->
+<div class="modal-overlay" id="galleryItemModal">
+    <div class="gacha-modal gallery-item-modal">
+        <div class="modal-close" id="closeGalleryItemBtn">&times;</div>
+        <div id="galleryItemContent"></div>
+    </div>
+</div>
+
+<!-- МОДАЛКА АККАУНТА -->
+<div class="modal-overlay" id="accountModal">
+    <div class="gacha-modal account-modal">
+        <div class="modal-close" id="closeAccountBtn">&times;</div>
+        <h3 style="color:#4a0a1a; margin-bottom:20px; text-align:center;">👤 Аккаунт</h3>
+        <div class="account-avatar-section">
+            <div class="account-avatar-large" id="accountAvatarLarge">🌸</div>
+            <div class="avatar-selector" id="avatarSelector"></div>
+        </div>
+        <input type="text" class="account-input" id="accountNickname" placeholder="Никнейм" maxlength="20" disabled style="background: rgba(255,255,255,0.5);">
+        <textarea class="account-textarea" id="accountDescription" placeholder="Описание профиля..."></textarea>
+        <button class="save-account-btn" id="saveAccountBtn">Сохранить изменения</button>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // ---------- 🔥 ВАШ КОНФИГ FIREBASE ----------
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOnPWlidKPr0be8H2K8-vLAfxocK49SAE",
+            authDomain: "solar-wish-gacha.firebaseapp.com",
+            projectId: "solar-wish-gacha",
+            storageBucket: "solar-wish-gacha.firebasestorage.app",
+            messagingSenderId: "856188924321",
+            appId: "1:856188924321:web:7540ce4d67998d76f69be0",
+            measurementId: "G-LLVLPN5P4M"
+        };
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // ---------- ПРЕДМЕТЫ ----------
+        const items3 = [
+            { name: 'Сладкий лепесток', emoji: '🌸' },
+            { name: 'Облачная лента', emoji: '🎀' },
+            { name: 'Хрустальный осколок', emoji: '💠' },
+            { name: 'Звёздная пыль', emoji: '✨' },
+            { name: 'Шёлковая нить', emoji: '🧵' },
+            { name: 'Перламутр', emoji: '🐚' }
+        ];
+        const items4 = [
+            { name: 'Лунная серьга', emoji: '🌙' },
+            { name: 'Сапфировый браслет', emoji: '💎' },
+            { name: 'Кольцо Рассвета', emoji: '💍' },
+            { name: 'Книга Теней', emoji: '📖' },
+            { name: 'Эликсир Грёз', emoji: '🧪' },
+            { name: 'Веер Сакуры', emoji: '🎐' }
+        ];
+        const items5Standard = [
+            { name: 'Клинок Заката', emoji: '⚔️' },
+            { name: 'Сфера Эона', emoji: '🔮' },
+            { name: 'Корона Миражей', emoji: '👑' },
+            { name: 'Сердце Феникса', emoji: '🔥' },
+            { name: 'Посох Вечности', emoji: '🌌' }
+        ];
+        const items5Event = {
+            'Хана · Цветение': { 
+                name: 'Хана · Цветение', 
+                emoji: '🌸',
+                lore: 'Древний цветок, распустившийся в самом сердце Шепчущего леса. Говорят, что тот, кто обладает этим цветком, обретает способность понимать язык природы и управлять временем цветения. Артефакт невероятной силы, за которым охотятся коллекционеры со всего мира.'
+            },
+            'Сакура · Ветер': { 
+                name: 'Сакура · Ветер', 
+                emoji: '🍃',
+                lore: 'Лепестки сакуры, подхваченные вечным ветром. Этот артефакт позволяет своему владельцу чувствовать малейшие изменения в потоках воздуха и предсказывать погоду. Моряки и путешественники готовы отдать целое состояние за этот талисман.'
+            }
+        };
+        const eventNames = ['Хана · Цветение', 'Сакура · Ветер'];
+
+        let currentUser = null;
+        let gems = 16000;
+        let twilight = 0;
+        const WISH_COST = 160;
+        let pity5 = 0, pity4 = 0;
+        let guaranteed = false;
+        let history = [];
+        let currentEventName = 'Хана · Цветение';
+        let ownedItems = new Set();
+        let isEventBanner = true;
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 5;
+
+        // Время ивента
+        let eventEndTime = new Date();
+        eventEndTime.setDate(eventEndTime.getDate() + 10);
+        eventEndTime.setHours(0, 0, 0, 0);
+
+        // Данные профиля
+        let profileAvatar = '🌸';
+        let profileDescription = '';
+        let duplicateCounts = { 'Хана · Цветение': 0, 'Сакура · Ветер': 0 };
+        let shardsClaimed = { 
+            'Хана · Цветение': [false, false, false, false, false, false], 
+            'Сакура · Ветер': [false, false, false, false, false, false] 
+        };
+
+        // Задания
+        let dailyTasks = {
+            login: { name: '🌸 Ежедневный вход', reward: 50, completed: false, icon: '🌸' },
+            wish1: { name: '🎀 Совершить 1 молитву', reward: 30, completed: false, icon: '🎀' },
+            viewHistory: { name: '📜 Просмотреть историю', reward: 20, completed: false, icon: '📜' },
+            viewGallery: { name: '🖼️ Посетить галерею', reward: 20, completed: false, icon: '🖼️' },
+            switchBanner: { name: '🔄 Сменить баннер', reward: 20, completed: false, icon: '🔄' }
+        };
+        let weeklyTasks = {
+            wish20: { name: '⭐ Совершить 20 молитв', reward: 200, progress: 0, target: 20, completed: false, claimed: false, icon: '⭐' },
+            get4star: { name: '🏆 Получить 4★ предмет', reward: 150, completed: false, claimed: false, icon: '✨' },
+            get5star: { name: '🌟 Получить 5★ предмет', reward: 300, completed: false, claimed: false, icon: '🌟' },
+            spend5000: { name: '📊 Потратить 5000✨', reward: 250, progress: 0, target: 5000, completed: false, claimed: false, icon: '💎' },
+            login5days: { name: '👥 Зайти 5 дней подряд', reward: 200, progress: 0, target: 5, completed: false, claimed: false, icon: '📅' }
+        };
+        let universeTasks = {
+            flowerCollect: { name: '🌼 Собрать цветы', reward: 100, progress: 0, target: 5, completed: false, claimed: false, icon: '🌼', description: 'Собери 5 цветов в лесу' }
+        };
+        let achievements = {
+            firstLogin: { name: '🎮 Новичок', reward: 500, completed: false, claimed: false, icon: '🎮', description: 'Первый вход в игру' },
+            firstWish: { name: '🌸 Первая молитва', reward: 200, completed: false, claimed: false, icon: '🌸', description: 'Совершить 1 молитву' },
+            first5star: { name: '⭐ Счастливчик', reward: 500, completed: false, claimed: false, icon: '⭐', description: 'Получить первый 5★ предмет' },
+            collect10: { name: '📚 Коллекционер', reward: 300, completed: false, claimed: false, icon: '📚', description: 'Собрать 10 разных предметов' },
+            play7days: { name: '🏅 Ветеран', reward: 1000, completed: false, claimed: false, icon: '🏅', description: 'Сыграть 7 дней' }
+        };
+
+        let totalWishes = 0;
+        let totalSpent = 0;
+        let loginStreak = 0;
+        let daysPlayed = 0;
+
+        // DOM элементы
+        const loginScreen = document.getElementById('loginScreen');
+        const gameWrapper = document.getElementById('gameWrapper');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const profileName = document.getElementById('profileName');
+        const headerAvatar = document.getElementById('headerAvatar');
+        const loginAvatar = document.getElementById('loginAvatar');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const bannerNameEl = document.getElementById('bannerName');
+        const bannerIcon = document.getElementById('bannerIcon');
+        const bannerSub = document.getElementById('bannerSub');
+        const guaranteeLabel = document.getElementById('guaranteeLabel');
+        const timeBadge = document.getElementById('timeBadge');
+        const pity5El = document.getElementById('pity5Display');
+        const pity4El = document.getElementById('pity4Display');
+        const guaranteeDisplay = document.getElementById('guaranteeDisplay');
+        const guaranteeText = document.getElementById('guaranteeText');
+        const gemEl = document.getElementById('gemAmount');
+        const ticketEl = document.getElementById('ticketCount');
+        const topGems = document.getElementById('topGems');
+        const topTwilight = document.getElementById('topTwilight');
+        
+        const starAnimation = document.getElementById('starAnimation');
+        const skipStarBtn = document.getElementById('skipStarBtn');
+        const starSvg = document.getElementById('starSvg');
+        const starText = document.getElementById('starText');
+        
+        const gachaModal = document.getElementById('gachaModal');
+        const itemsListModal = document.getElementById('itemsListModal');
+        const galleryItemModal = document.getElementById('galleryItemModal');
+        const accountModal = document.getElementById('accountModal');
+        const modalEmoji = document.getElementById('modalEmoji');
+        const modalName = document.getElementById('modalName');
+        const modalStars = document.getElementById('modalStars');
+        const modalRarityBadge = document.getElementById('modalRarityBadge');
+        const modalContent = document.getElementById('modalContent');
+        const prevItemBtn = document.getElementById('prevItemBtn');
+        const nextItemBtn = document.getElementById('nextItemBtn');
+        const itemCounter = document.getElementById('itemCounter');
+        const itemsListGrid = document.getElementById('itemsListGrid');
+        const galleryItemContent = document.getElementById('galleryItemContent');
+        const historyListContainer = document.getElementById('historyListContainer');
+        const prevPageBtn = document.getElementById('prevPageBtn');
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const pageIndicator = document.getElementById('pageIndicator');
+        const tasksList = document.getElementById('tasksList');
+        const achievementsList = document.getElementById('achievementsList');
+        const galleryContainer = document.getElementById('galleryContainer');
+
+        const accountAvatarLarge = document.getElementById('accountAvatarLarge');
+        const avatarSelector = document.getElementById('avatarSelector');
+        const accountNickname = document.getElementById('accountNickname');
+        const accountDescription = document.getElementById('accountDescription');
+
+        let starResolve = null;
+        let isAnimating = false;
+        let currentItems = [];
+        let currentItemIndex = 0;
+
+        // ---------- ОБЛАЧНЫЕ ФУНКЦИИ ----------
+        async function loadCloudProgress(userId) {
+            try {
+                const doc = await db.collection('users').doc(userId).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    gems = data.gems || 16000;
+                    twilight = data.twilight || 0;
+                    pity5 = data.pity5 || 0;
+                    pity4 = data.pity4 || 0;
+                    guaranteed = data.guaranteed || false;
+                    history = data.history || [];
+                    currentEventName = data.currentEventName || 'Хана · Цветение';
+                    ownedItems = new Set(data.ownedItems || []);
+                    isEventBanner = data.isEventBanner !== undefined ? data.isEventBanner : true;
+                    profileAvatar = data.profileAvatar || '🌸';
+                    profileDescription = data.profileDescription || '';
+                    duplicateCounts = data.duplicateCounts || { 'Хана · Цветение': 0, 'Сакура · Ветер': 0 };
+                    shardsClaimed = data.shardsClaimed || { 'Хана · Цветение': [false,false,false,false,false,false], 'Сакура · Ветер': [false,false,false,false,false,false] };
+                    
+                    if (data.eventEndTime) eventEndTime = new Date(data.eventEndTime);
+                    if (data.dailyTasks) dailyTasks = data.dailyTasks;
+                    if (data.weeklyTasks) weeklyTasks = data.weeklyTasks;
+                    if (data.universeTasks) universeTasks = data.universeTasks;
+                    if (data.achievements) achievements = data.achievements;
+                    totalWishes = data.totalWishes || 0;
+                    totalSpent = data.totalSpent || 0;
+                    loginStreak = data.loginStreak || 0;
+                    daysPlayed = data.daysPlayed || 0;
+                    
+                    console.log('✅ Прогресс загружен из облака');
+                } else {
+                    console.log('🆕 Новый аккаунт, создаём стартовые данные');
+                }
+                headerAvatar.textContent = profileAvatar;
+                loginAvatar.textContent = profileAvatar;
+                updateUI();
+                updateBannerUI();
+            } catch (error) {
+                console.error('❌ Ошибка загрузки из облака:', error);
+            }
+        }
+
+        async function saveCloudProgress(userId) {
+            if (!userId) return;
+            const saveData = {
+                gems, twilight, pity5, pity4, guaranteed,
+                history, currentEventName,
+                ownedItems: Array.from(ownedItems),
+                isEventBanner,
+                profileAvatar, profileDescription,
+                duplicateCounts, shardsClaimed,
+                eventEndTime: eventEndTime.toISOString(),
+                dailyTasks, weeklyTasks, universeTasks, achievements,
+                totalWishes, totalSpent, loginStreak, daysPlayed,
+                lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            try {
+                await db.collection('users').doc(userId).set(saveData, { merge: true });
+                console.log('☁️ Прогресс сохранён в облако');
+            } catch (error) {
+                console.error('❌ Ошибка сохранения в облако:', error);
+            }
+        }
+
+        async function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                currentUser = user.uid;
+                profileName.textContent = user.displayName || 'Игрок';
+                accountNickname.value = user.displayName || '';
+                
+                await loadCloudProgress(user.uid);
+                
+                loginScreen.classList.add('hidden');
+                gameWrapper.classList.add('visible');
+                document.body.classList.add('world-background');
+                updateUI();
+            } catch (error) {
+                loginError.textContent = 'Ошибка входа: ' + error.message;
+            }
+        }
+
+        async function logout() {
+            await auth.signOut();
+            currentUser = null;
+            gameWrapper.classList.remove('visible');
+            loginScreen.classList.remove('hidden');
+        }
+
+        // ---------- НАВИГАЦИЯ ПО ЭКРАНАМ ----------
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const screen = btn.dataset.screen;
+                document.querySelectorAll('.main-screen').forEach(s => s.classList.remove('active'));
+                document.getElementById(screen + 'Screen').classList.add('active');
+                
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                document.body.classList.remove('world-background', 'tasks-background', 'achievements-background', 'gacha-background', 'gallery-background', 'history-background');
+                
+                if (screen === 'world') {
+                    document.body.classList.add('world-background');
+                } else if (screen === 'tasks') {
+                    document.body.classList.add('tasks-background');
+                    renderTasks('daily');
+                } else if (screen === 'achievements') {
+                    document.body.classList.add('achievements-background');
+                    renderAchievements();
+                } else if (screen === 'gacha') {
+                    document.body.classList.add('gacha-background');
+                } else if (screen === 'gallery') {
+                    document.body.classList.add('gallery-background');
+                    renderGallery();
+                } else if (screen === 'history') {
+                    document.body.classList.add('history-background');
+                    renderHistoryPage();
+                }
+                
+                if (screen === 'history' && !dailyTasks.viewHistory.completed) {
+                    dailyTasks.viewHistory.completed = true;
+                    gems += dailyTasks.viewHistory.reward;
+                    showNotification(dailyTasks.viewHistory.name, dailyTasks.viewHistory.reward);
+                    updateUI();
+                }
+                if (screen === 'gallery' && !dailyTasks.viewGallery.completed) {
+                    dailyTasks.viewGallery.completed = true;
+                    gems += dailyTasks.viewGallery.reward;
+                    showNotification(dailyTasks.viewGallery.name, dailyTasks.viewGallery.reward);
+                    updateUI();
+                }
+            });
+        });
+
+        // Кнопка аккаунта
+        document.getElementById('accountBtn').addEventListener('click', openAccountModal);
+        document.getElementById('closeAccountBtn').addEventListener('click', () => accountModal.classList.remove('active'));
+        accountModal.addEventListener('click', e => { if (e.target === accountModal) accountModal.classList.remove('active'); });
+        document.getElementById('saveAccountBtn').addEventListener('click', saveAccountChanges);
+
+        function openAccountModal() {
+            accountAvatarLarge.textContent = profileAvatar;
+            accountDescription.value = profileDescription;
+            renderAvatarSelector();
+            accountModal.classList.add('active');
+        }
+
+        function renderAvatarSelector() {
+            const ownedEmojis = [profileAvatar];
+            ownedItems.forEach(itemId => {
+                const parts = itemId.split('-');
+                if (parts[0] === '5') {
+                    const item = [...Object.values(items5Event), ...items5Standard].find(i => i.name === parts.slice(1).join('-'));
+                    if (item) ownedEmojis.push(item.emoji);
+                } else if (parts[0] === '4') {
+                    const item = items4.find(i => i.name === parts.slice(1).join('-'));
+                    if (item) ownedEmojis.push(item.emoji);
+                }
+            });
+            const uniqueEmojis = [...new Set(ownedEmojis)];
+            let html = '';
+            uniqueEmojis.forEach(emoji => {
+                html += `<div class="avatar-option ${profileAvatar === emoji ? 'selected' : ''}" data-emoji="${emoji}">${emoji}</div>`;
+            });
+            avatarSelector.innerHTML = html;
+            document.querySelectorAll('.avatar-option').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+                    opt.classList.add('selected');
+                    profileAvatar = opt.dataset.emoji;
+                    accountAvatarLarge.textContent = profileAvatar;
+                });
+            });
+        }
+
+        function saveAccountChanges() {
+            profileDescription = accountDescription.value.trim();
+            headerAvatar.textContent = profileAvatar;
+            loginAvatar.textContent = profileAvatar;
+            saveCloudProgress(currentUser);
+            accountModal.classList.remove('active');
+            showNotification('✅ Профиль обновлён!', 0);
+        }
+
+        // Вкладки заданий
+        document.querySelectorAll('.task-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.task-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderTasks(tab.dataset.tab);
+            });
+        });
+
+        // Карта мира
+        document.querySelectorAll('.map-location').forEach(loc => {
+            loc.addEventListener('click', () => {
+                const location = loc.dataset.location;
+                if (location === 'forest' && !universeTasks.flowerCollect.completed && !universeTasks.flowerCollect.claimed) {
+                    universeTasks.flowerCollect.progress++;
+                    if (universeTasks.flowerCollect.progress >= universeTasks.flowerCollect.target) {
+                        universeTasks.flowerCollect.completed = true;
+                    }
+                    showNotification(`🌼 Собрано цветов: ${universeTasks.flowerCollect.progress}/${universeTasks.flowerCollect.target}`, 0);
+                    saveCloudProgress(currentUser);
+                } else if (location === 'shop') {
+                    showNotification('🛒 Магазин скоро откроется!', 0);
+                }
+            });
+        });
+
+        function showNotification(text, reward) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+                background: linear-gradient(145deg, #fff0f5, #fce4ec);
+                padding: 15px 30px; border-radius: 50px; border: 2px solid white;
+                box-shadow: 0 10px 30px rgba(240,98,146,0.3); z-index: 3000;
+                color: #4a0a1a; font-weight: 600;
+            `;
+            notification.innerHTML = reward > 0 ? `✅ ${text} +${reward}✨` : text;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function renderTasks(tab) {
+            let html = '';
+            const tasks = tab === 'daily' ? dailyTasks : (tab === 'weekly' ? weeklyTasks : universeTasks);
+            
+            Object.entries(tasks).forEach(([key, task]) => {
+                const completed = task.completed || task.claimed;
+                const canClaim = task.completed && !task.claimed;
+                
+                html += `<div class="task-item ${completed ? 'completed' : ''}">`;
+                html += `<span class="task-icon">${task.icon}</span>`;
+                html += `<div class="task-info">`;
+                html += `<div class="task-name">${task.name}</div>`;
+                if (task.target) {
+                    const progress = task.progress || 0;
+                    const percent = (progress / task.target) * 100;
+                    html += `<div class="task-progress">${progress}/${task.target}</div>`;
+                    html += `<div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>`;
+                }
+                html += `</div>`;
+                html += `<span class="task-reward">+${task.reward}✨</span>`;
+                if (canClaim) {
+                    html += `<button class="claim-btn" data-task="${key}" data-tab="${tab}">Забрать</button>`;
+                } else if (completed) {
+                    html += `<span style="color:#4a7a6a;">✓</span>`;
+                }
+                html += `</div>`;
+            });
+            
+            tasksList.innerHTML = html || '<div style="text-align:center; color:#4a0a1a; padding:20px;">Нет заданий</div>';
+            
+            document.querySelectorAll('.claim-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const taskKey = btn.dataset.task;
+                    const taskTab = btn.dataset.tab;
+                    let task;
+                    if (taskTab === 'daily') task = dailyTasks[taskKey];
+                    else if (taskTab === 'weekly') task = weeklyTasks[taskKey];
+                    else task = universeTasks[taskKey];
+                    
+                    if (task && task.completed && !task.claimed) {
+                        task.claimed = true;
+                        gems += task.reward;
+                        updateUI();
+                        showNotification(task.name, task.reward);
+                        renderTasks(taskTab);
+                        saveCloudProgress(currentUser);
+                    }
+                });
+            });
+        }
+
+        function renderAchievements() {
+            let html = '';
+            Object.entries(achievements).forEach(([key, ach]) => {
+                const completed = ach.completed;
+                const canClaim = ach.completed && !ach.claimed;
+                
+                html += `<div class="task-item ${completed ? 'completed' : ''}">`;
+                html += `<span class="task-icon">${ach.icon}</span>`;
+                html += `<div class="task-info">`;
+                html += `<div class="task-name">${ach.name}</div>`;
+                html += `<div class="task-progress">${ach.description}</div>`;
+                html += `</div>`;
+                html += `<span class="task-reward">+${ach.reward}✨</span>`;
+                if (canClaim) {
+                    html += `<button class="claim-btn" data-ach="${key}">Забрать</button>`;
+                } else if (completed && ach.claimed) {
+                    html += `<span style="color:#4a7a6a;">✓</span>`;
+                }
+                html += `</div>`;
+            });
+            
+            achievementsList.innerHTML = html || '<div style="text-align:center; color:#4a0a1a; padding:20px;">Нет достижений</div>';
+            
+            document.querySelectorAll('[data-ach]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const achKey = btn.dataset.ach;
+                    const ach = achievements[achKey];
+                    if (ach && ach.completed && !ach.claimed) {
+                        ach.claimed = true;
+                        gems += ach.reward;
+                        updateUI();
+                        showNotification(ach.name, ach.reward);
+                        renderAchievements();
+                        saveCloudProgress(currentUser);
+                    }
+                });
+            });
+        }
+
+        function updateTimeBadge() {
+            const now = new Date();
+            const diff = eventEndTime - now;
+            if (diff <= 0) { timeBadge.textContent = '⏳ Завершён'; return; }
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            timeBadge.textContent = `⏳ ${days}д ${hours.toString().padStart(2,'0')}ч ${minutes.toString().padStart(2,'0')}м`;
+        }
+
+        function checkDailyReset() {
+            const now = new Date();
+            const today = now.toDateString();
+            const lastReset = localStorage.getItem('lastDailyReset');
+            
+            if (lastReset !== today) {
+                Object.keys(dailyTasks).forEach(key => dailyTasks[key].completed = false);
+                localStorage.setItem('lastDailyReset', today);
+                
+                const lastLogin = localStorage.getItem('lastLoginDate');
+                const yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                if (lastLogin === yesterday.toDateString()) {
+                    loginStreak++;
+                } else if (lastLogin !== today) {
+                    loginStreak = 1;
+                }
+                
+                localStorage.setItem('loginStreak', loginStreak);
+                localStorage.setItem('lastLoginDate', today);
+                
+                weeklyTasks.login5days.progress = loginStreak;
+                if (loginStreak >= 5) weeklyTasks.login5days.completed = true;
+                
+                daysPlayed++;
+                if (daysPlayed >= 7 && !achievements.play7days.completed) {
+                    achievements.play7days.completed = true;
+                    showNotification('🏆 Достижение: Ветеран!', achievements.play7days.reward);
+                }
+            }
+            
+            if (!dailyTasks.login.completed) {
+                dailyTasks.login.completed = true;
+                gems += dailyTasks.login.reward;
+                showNotification(dailyTasks.login.name, dailyTasks.login.reward);
+            }
+            
+            if (!achievements.firstLogin.completed) {
+                achievements.firstLogin.completed = true;
+                showNotification('🎮 Достижение: Новичок!', achievements.firstLogin.reward);
+                gems += achievements.firstLogin.reward;
+            }
+            
+            saveCloudProgress(currentUser);
+        }
+
+        function updateTopCurrency() {
+            topGems.textContent = gems;
+            topTwilight.textContent = twilight;
+        }
+
+        function updateBannerUI() {
+            if (isEventBanner) {
+                document.body.className = 'event-banner';
+                const eventItem = items5Event[currentEventName];
+                bannerIcon.textContent = eventItem.emoji;
+                bannerNameEl.innerHTML = `${currentEventName} <span class="sparkle">✦</span>`;
+                bannerSub.innerHTML = `🌸 ${eventItem.emoji} Ограниченный ивент`;
+                guaranteeLabel.textContent = 'Гарант';
+                document.getElementById('eventBannerTab').classList.add('active');
+                document.getElementById('standardBannerTab').classList.remove('active');
+                document.getElementById('nextBannerBtn').textContent = '⟳ Сменить ивент';
+            } else {
+                document.body.className = 'standard-banner';
+                bannerIcon.textContent = '💙';
+                bannerNameEl.innerHTML = `Стандартный <span class="sparkle">✦</span>`;
+                bannerSub.innerHTML = '💙 Постоянный баннер';
+                guaranteeLabel.textContent = 'Статус';
+                document.getElementById('standardBannerTab').classList.add('active');
+                document.getElementById('eventBannerTab').classList.remove('active');
+                document.getElementById('nextBannerBtn').textContent = '⟳ Стандарт';
+            }
+            const activeScreen = document.querySelector('.main-screen.active');
+            if (activeScreen) {
+                const screenId = activeScreen.id.replace('Screen', '');
+                document.body.classList.remove('world-background', 'tasks-background', 'achievements-background', 'gacha-background', 'gallery-background', 'history-background');
+                document.body.classList.add(screenId + '-background');
+            }
+            updateTimeBadge();
+        }
+
+        function updateUI() {
+            pity5El.textContent = pity5; pity4El.textContent = pity4;
+            if (isEventBanner) {
+                if (guaranteed) { guaranteeDisplay.textContent = '✅'; guaranteeText.textContent = '100% ивент'; }
+                else { guaranteeDisplay.textContent = '⚖️'; guaranteeText.textContent = '50/50'; }
+            } else {
+                guaranteeDisplay.textContent = '💙'; guaranteeText.textContent = 'Без гаранта';
+            }
+            gemEl.textContent = gems; ticketEl.textContent = Math.floor(gems / WISH_COST);
+            updateTopCurrency();
+            document.getElementById('wish1Btn').disabled = gems < WISH_COST || isAnimating;
+            document.getElementById('wish10Btn').disabled = gems < WISH_COST * 10 || isAnimating;
+            updateTimeBadge();
+        }
+
+        function addToHistory(rarity, itemName, emoji) {
+            const timestamp = new Date().toLocaleTimeString().slice(0,5);
+            history.unshift({ rarity, name: itemName, emoji, timestamp });
+            if (history.length > 100) history.pop();
+            ownedItems.add(`${rarity}-${itemName}`);
+            
+            if (ownedItems.size >= 10 && !achievements.collect10.completed) {
+                achievements.collect10.completed = true;
+                showNotification('📚 Достижение: Коллекционер!', achievements.collect10.reward);
+            }
+        }
+
+        function showStarAnimation(hasLegendary) {
+            return new Promise((resolve) => {
+                isAnimating = true; updateUI();
+                if (hasLegendary) { starSvg.classList.add('gold'); starSvg.querySelector('polygon').setAttribute('fill', '#ffd54f'); starText.classList.add('gold'); }
+                else { starSvg.classList.remove('gold'); starSvg.querySelector('polygon').setAttribute('fill', '#64b5f6'); starText.classList.remove('gold'); }
+                starAnimation.classList.add('active');
+                starResolve = resolve;
+                const timeout = setTimeout(() => closeStarAnimation(), 2000);
+                skipStarBtn.onclick = () => { clearTimeout(timeout); closeStarAnimation(true); };
+            });
+        }
+
+        function closeStarAnimation(skipToItems = false) {
+            starAnimation.classList.remove('active');
+            isAnimating = false; updateUI();
+            if (starResolve) { starResolve(skipToItems); starResolve = null; }
+            skipStarBtn.onclick = null;
+        }
+
+        function updateModalContent(item) {
+            modalEmoji.textContent = item.emoji;
+            modalName.textContent = item.name;
+            let starsText = '', badgeText = '', badgeClass = '';
+            if (item.rarity === 5) { starsText = '★★★★★'; badgeText = '5★ ЛЕГЕНДАРНЫЙ'; badgeClass = 'rarity-5-badge'; modalContent.classList.add('modal-legendary'); }
+            else if (item.rarity === 4) { starsText = '★★★★'; badgeText = '4★ ЭПИЧЕСКИЙ'; badgeClass = 'rarity-4-badge'; modalContent.classList.remove('modal-legendary'); }
+            else { starsText = '★★★'; badgeText = '3★ ОБЫЧНЫЙ'; badgeClass = 'rarity-3-badge'; modalContent.classList.remove('modal-legendary'); }
+            modalStars.textContent = starsText;
+            modalRarityBadge.textContent = badgeText;
+            modalRarityBadge.className = `modal-rarity-badge ${badgeClass}`;
+            itemCounter.textContent = `${currentItemIndex + 1} / ${currentItems.length}`;
+            
+            prevItemBtn.classList.toggle('disabled', currentItemIndex === 0);
+            nextItemBtn.classList.toggle('disabled', currentItemIndex === currentItems.length - 1);
+        }
+
+        function showSingleItem(item) {
+            updateModalContent(item);
+            gachaModal.classList.add('active');
+        }
+
+        function showItemsList(items) {
+            let html = '';
+            items.forEach(item => {
+                let stars = '★★★', rarityClass = 'rarity-3';
+                if (item.rarity === 5) { stars = '★★★★★'; rarityClass = 'rarity-5'; }
+                else if (item.rarity === 4) { stars = '★★★★'; rarityClass = 'rarity-4'; }
+                html += `<div class="items-list-item ${rarityClass}">
+                    <span style="font-size:2rem;">${item.emoji}</span>
+                    <div style="flex:1;"><div style="font-weight:600;">${item.name}</div><div style="font-size:0.8rem;">${stars}</div></div>
+                </div>`;
+            });
+            itemsListGrid.innerHTML = html;
+            itemsListModal.classList.add('active');
+        }
+
+        function closeAllModals() {
+            gachaModal.classList.remove('active');
+            itemsListModal.classList.remove('active');
+        }
+
+        async function performWishSequence(wishCount) {
+            if (isAnimating) return;
+            const items = [];
+            let hasLegendary = false;
+            
+            for (let i = 0; i < wishCount; i++) {
+                if (gems < WISH_COST) break;
+                gems -= WISH_COST;
+                totalSpent += WISH_COST;
+                pity5++; pity4++;
+                totalWishes++;
+                
+                let rarity = 3;
+                let fiveChance = 0.006;
+                if (pity5 >= 75) { const factor = Math.min(1.0, (pity5 - 74) / 16); fiveChance = 0.006 + (0.994 * factor); }
+                if (pity5 >= 90) rarity = 5;
+                else if (Math.random() < fiveChance) rarity = 5;
+                else if (pity4 >= 10) rarity = 4;
+                else if (Math.random() < 0.051) rarity = 4;
+                
+                let selectedItem;
+                if (rarity === 5) {
+                    hasLegendary = true;
+                    if (isEventBanner) {
+                        let win = false;
+                        if (guaranteed) { win = true; guaranteed = false; }
+                        else { win = Math.random() < 0.5; if (!win) guaranteed = true; }
+                        selectedItem = win ? items5Event[currentEventName] : items5Standard[Math.floor(Math.random() * items5Standard.length)];
+                        if (win) {
+                            duplicateCounts[currentEventName] = (duplicateCounts[currentEventName] || 0) + 1;
+                        }
+                    } else {
+                        selectedItem = items5Standard[Math.floor(Math.random() * items5Standard.length)];
+                    }
+                    pity5 = 0; pity4 = 0;
+                    
+                    if (!weeklyTasks.get5star.completed) {
+                        weeklyTasks.get5star.completed = true;
+                        showNotification('🌟 Задание: Получить 5★ предмет!', 0);
+                    }
+                    if (!achievements.first5star.completed) {
+                        achievements.first5star.completed = true;
+                        showNotification('⭐ Достижение: Счастливчик!', achievements.first5star.reward);
+                        gems += achievements.first5star.reward;
+                    }
+                } else if (rarity === 4) {
+                    selectedItem = items4[Math.floor(Math.random() * items4.length)];
+                    pity4 = 0;
+                    if (!weeklyTasks.get4star.completed) {
+                        weeklyTasks.get4star.completed = true;
+                        showNotification('✨ Задание: Получить 4★ предмет!', 0);
+                    }
+                } else {
+                    selectedItem = items3[Math.floor(Math.random() * items3.length)];
+                }
+                const item = { ...selectedItem, rarity };
+                addToHistory(rarity, item.name, item.emoji);
+                items.push(item);
+            }
+            
+            if (!dailyTasks.wish1.completed) {
+                dailyTasks.wish1.completed = true;
+                gems += dailyTasks.wish1.reward;
+                showNotification(dailyTasks.wish1.name, dailyTasks.wish1.reward);
+            }
+            weeklyTasks.wish20.progress = Math.min(totalWishes, 20);
+            if (totalWishes >= 20 && !weeklyTasks.wish20.completed) {
+                weeklyTasks.wish20.completed = true;
+            }
+            weeklyTasks.spend5000.progress = Math.min(totalSpent, 5000);
+            if (totalSpent >= 5000 && !weeklyTasks.spend5000.completed) {
+                weeklyTasks.spend5000.completed = true;
+            }
+            
+            if (!achievements.firstWish.completed && totalWishes > 0) {
+                achievements.firstWish.completed = true;
+                showNotification('🌸 Достижение: Первая молитва!', achievements.firstWish.reward);
+                gems += achievements.firstWish.reward;
+            }
+            
+            const skipToItems = await showStarAnimation(hasLegendary);
+            updateUI();
+            currentItems = items;
+            currentItemIndex = 0;
+            
+            if (skipToItems) {
+                showItemsList(items);
+            } else if (items.length > 0) {
+                showSingleItem(items[0]);
+            }
+            
+            saveCloudProgress(currentUser);
+        }
+
+        function goToPrevItem() {
+            if (currentItemIndex > 0) {
+                currentItemIndex--;
+                updateModalContent(currentItems[currentItemIndex]);
+            }
+        }
+
+        function goToNextItem() {
+            if (currentItemIndex < currentItems.length - 1) {
+                currentItemIndex++;
+                updateModalContent(currentItems[currentItemIndex]);
+            }
+        }
+
+        function renderHistoryPage() {
+            const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE) || 1;
+            const start = (currentPage - 1) * ITEMS_PER_PAGE, end = start + ITEMS_PER_PAGE;
+            const pageItems = history.slice(start, end);
+            if (pageItems.length === 0) { historyListContainer.innerHTML = '<div style="text-align:center; padding:20px; color:#4a0a1a;">Нет записей</div>'; }
+            else {
+                let html = '';
+                pageItems.forEach(item => {
+                    let stars = '★★★', borderColor = '#b39ddb';
+                    if (item.rarity === 5) { stars = '★★★★★'; borderColor = '#ffb74d'; }
+                    else if (item.rarity === 4) { stars = '★★★★'; borderColor = '#ce93d8'; }
+                    else if (item.rarity === 0) { stars = '✨'; borderColor = '#f8bbd0'; }
+                    html += `<div class="history-modal-item" style="border-left-color: ${borderColor};"><span style="font-size:1.5rem;">${item.emoji}</span><div><div style="font-weight:600;">${item.name}</div><div style="font-size:0.8rem;">${stars}</div></div><span>${item.timestamp}</span></div>`;
+                });
+                historyListContainer.innerHTML = html;
+            }
+            pageIndicator.textContent = `${currentPage} / ${totalPages}`;
+            prevPageBtn.disabled = currentPage <= 1;
+            nextPageBtn.disabled = currentPage >= totalPages;
+        }
+
+        function renderGallery() {
+            const all5Event = Object.values(items5Event).map(i => ({ ...i, rarity: 5, isEvent: true }));
+            const all5Standard = items5Standard.map(i => ({ ...i, rarity: 5, isEvent: false }));
+            const all4 = items4.map(i => ({ ...i, rarity: 4 }));
+            const all3 = items3.map(i => ({ ...i, rarity: 3 }));
+            let html = '';
+            [ { title: '🌸 5★ Ивентовые', items: all5Event }, { title: '💙 5★ Стандартные', items: all5Standard }, { title: '✨ 4★ Эпические', items: all4 }, { title: '🌸 3★ Обычные', items: all3 } ].forEach((section, idx) => {
+                if (idx > 0) html += '<div style="height:2px; background:rgba(139,37,64,0.2); margin:20px 0;"></div>';
+                html += `<div class="gallery-section"><h3>${section.title}</h3><div class="gallery-grid">`;
+                section.items.forEach(item => {
+                    const owned = ownedItems.has(`${item.rarity}-${item.name}`);
+                    let stars = '★★★★★';
+                    if (item.rarity === 4) stars = '★★★★';
+                    else if (item.rarity === 3) stars = '★★★';
+                    html += `<div class="gallery-item ${owned ? 'owned' : 'locked'}" data-item-name="${item.name}" data-item-rarity="${item.rarity}">`;
+                    html += `${!owned ? '<span class="gallery-lock">🔒</span>' : ''}<span class="gallery-emoji">${item.emoji}</span><span class="gallery-name">${item.name}</span><span>${stars}</span>`;
+                    html += `</div>`;
+                });
+                html += '</div></div>';
+            });
+            galleryContainer.innerHTML = html;
+            
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const name = item.dataset.itemName;
+                    const rarity = parseInt(item.dataset.itemRarity);
+                    const owned = ownedItems.has(`${rarity}-${name}`);
+                    if (!owned) {
+                        showNotification('🔒 Предмет ещё не получен!', 0);
+                        return;
+                    }
+                    showGalleryItemDetail(name, rarity);
+                });
+            });
+        }
+
+        function showGalleryItemDetail(name, rarity) {
+            let item;
+            if (rarity === 5) {
+                item = items5Event[name] || items5Standard.find(i => i.name === name);
+            } else if (rarity === 4) {
+                item = items4.find(i => i.name === name);
+            } else {
+                item = items3.find(i => i.name === name);
+            }
+            if (!item) return;
+            
+            const isEventItem = items5Event[name] !== undefined;
+            const dupCount = duplicateCounts[name] || 0;
+            const shardClaimed = shardsClaimed[name] || [false, false, false, false, false, false];
+            
+            let html = `<div class="item-detail-container">`;
+            html += `<div class="item-detail-left"><div class="item-detail-emoji">${item.emoji}</div></div>`;
+            html += `<div class="item-detail-right">`;
+            html += `<div class="item-detail-name">${item.name}</div>`;
+            html += `<div class="item-detail-stars">${'★'.repeat(rarity)}</div>`;
+            html += `<div class="item-detail-lore">${item.lore || 'Загадочный артефакт, окутанный тайнами.'}</div>`;
+            
+            if (isEventItem) {
+                html += `<div class="constellation-container">`;
+                for (let i = 0; i < 6; i++) {
+                    const unlocked = i < dupCount;
+                    const claimed = shardClaimed[i];
+                    let shardClass = 'constellation-shard';
+                    if (claimed) shardClass += ' claimed';
+                    else if (unlocked) shardClass += ' unlocked';
+                    html += `<div class="${shardClass}" data-shard-index="${i}" data-item-name="${name}">`;
+                    html += item.emoji;
+                    if (!unlocked && !claimed) html += `<span class="lock-icon">🔒</span>`;
+                    html += `</div>`;
+                }
+                html += `</div>`;
+            }
+            html += `</div></div>`;
+            
+            galleryItemContent.innerHTML = html;
+            galleryItemModal.classList.add('active');
+            
+            document.querySelectorAll('.constellation-shard.unlocked').forEach(shard => {
+                shard.addEventListener('click', () => {
+                    const itemName = shard.dataset.itemName;
+                    const shardIndex = parseInt(shard.dataset.shardIndex);
+                    if (!shardsClaimed[itemName][shardIndex]) {
+                        shardsClaimed[itemName][shardIndex] = true;
+                        twilight += 100;
+                        updateUI();
+                        showNotification(`🌙 +100 сумеречников за осколок ${itemName}!`, 0);
+                        saveCloudProgress(currentUser);
+                        galleryItemModal.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        document.getElementById('closeGalleryItemBtn').addEventListener('click', () => galleryItemModal.classList.remove('active'));
+        galleryItemModal.addEventListener('click', e => { if (e.target === galleryItemModal) galleryItemModal.classList.remove('active'); });
+
+        function switchBanner(isEvent) {
+            isEventBanner = isEvent;
+            updateBannerUI();
+            updateUI();
+            
+            if (!dailyTasks.switchBanner.completed) {
+                dailyTasks.switchBanner.completed = true;
+                gems += dailyTasks.switchBanner.reward;
+                showNotification(dailyTasks.switchBanner.name, dailyTasks.switchBanner.reward);
+            }
+            
+            saveCloudProgress(currentUser);
+        }
+
+        function nextBanner() {
+            if (isEventBanner) {
+                const currentIndex = eventNames.indexOf(currentEventName);
+                const nextIndex = (currentIndex + 1) % eventNames.length;
+                currentEventName = eventNames[nextIndex];
+                updateBannerUI();
+            }
+            history.unshift({ rarity: 0, name: isEventBanner ? `Смена ивента на "${currentEventName}"` : 'Стандартный баннер', emoji: '🔄', timestamp: new Date().toLocaleTimeString().slice(0,5) });
+            updateUI();
+            saveCloudProgress(currentUser);
+        }
+
+        function resetAll() {
+            if (isAnimating) return;
+            gems = 16000; twilight = 0; pity5 = 0; pity4 = 0; guaranteed = false; history = []; ownedItems.clear();
+            totalWishes = 0; totalSpent = 0;
+            duplicateCounts = { 'Хана · Цветение': 0, 'Сакура · Ветер': 0 };
+            shardsClaimed = { 'Хана · Цветение': [false,false,false,false,false,false], 'Сакура · Ветер': [false,false,false,false,false,false] };
+            eventEndTime = new Date(); eventEndTime.setDate(eventEndTime.getDate() + 10); eventEndTime.setHours(0,0,0,0);
+            currentEventName = 'Хана · Цветение';
+            history.push({ rarity: 0, name: 'Прогресс сброшен', emoji: '🔄', timestamp: new Date().toLocaleTimeString().slice(0,5) });
+            updateBannerUI();
+            updateUI();
+            saveCloudProgress(currentUser);
+        }
+
+        async function performWish() { if (gems >= WISH_COST && !isAnimating) await performWishSequence(1); }
+        async function performTenWish() { if (gems >= WISH_COST * 10 && !isAnimating) await performWishSequence(10); }
+
+        // Слушатель состояния авторизации
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user.uid;
+                profileName.textContent = user.displayName || 'Игрок';
+                accountNickname.value = user.displayName || '';
+                await loadCloudProgress(user.uid);
+                loginScreen.classList.add('hidden');
+                gameWrapper.classList.add('visible');
+                document.body.classList.add('world-background');
+                checkDailyReset();
+            } else {
+                loginScreen.classList.remove('hidden');
+                gameWrapper.classList.remove('visible');
+            }
+        });
+
+        function init() {
+            loginBtn.addEventListener('click', loginWithGoogle);
+            logoutBtn.addEventListener('click', logout);
+            
+            document.getElementById('eventBannerTab').addEventListener('click', () => switchBanner(true));
+            document.getElementById('standardBannerTab').addEventListener('click', () => switchBanner(false));
+            document.getElementById('wish1Btn').addEventListener('click', performWish);
+            document.getElementById('wish10Btn').addEventListener('click', performTenWish);
+            document.getElementById('nextBannerBtn').addEventListener('click', nextBanner);
+            document.getElementById('resetBtn').addEventListener('click', resetAll);
+            document.getElementById('addGemsBtn').addEventListener('click', () => { gems += 1600; updateUI(); saveCloudProgress(currentUser); });
+            
+            prevItemBtn.addEventListener('click', goToPrevItem);
+            nextItemBtn.addEventListener('click', goToNextItem);
+            document.getElementById('closeModalBtn').addEventListener('click', closeAllModals);
+            gachaModal.addEventListener('click', e => { if (e.target === gachaModal) closeAllModals(); });
+            document.getElementById('closeItemsListBtn').addEventListener('click', closeAllModals);
+            itemsListModal.addEventListener('click', e => { if (e.target === itemsListModal) closeAllModals(); });
+            
+            starAnimation.addEventListener('click', e => { if (e.target === starAnimation) closeStarAnimation(false); });
+            
+            prevPageBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderHistoryPage(); } });
+            nextPageBtn.addEventListener('click', () => { const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE) || 1; if (currentPage < totalPages) { currentPage++; renderHistoryPage(); } });
+            
+            setInterval(updateTimeBadge, 60000);
+            updateUI();
+        }
+        init();
+    })();
+</script>
+</body>
+</html>
