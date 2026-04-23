@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🌸 Солнечная Гача · Локальная версия</title>
+    <title>🌸 Солнечная Гача · Исправленная версия</title>
     
     <!-- Шрифты -->
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,9 +30,9 @@
         body.gacha-background { background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important; }
         body.gallery-background { background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important; }
         body.history-background { background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important; }
-        body.items-background { background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #f06292 100%); }
-        body.settings-background { background: linear-gradient(145deg, #fce4ec 0%, #f8bbd0 30%, #f48fb1 70%, #f06292 100%); }
-        body.standard-banner { background: linear-gradient(145deg, #e3f2fd 0%, #bbdefb 30%, #90caf9 70%, #64b5f6 100%); }
+        body.items-background { background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important; }
+        body.settings-background { background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important; }
+        body.standard-banner { background: url('https://i.ibb.co/1td7fdx9/efac18ede786d1161c6730310b4bc060.jpg') center/cover fixed !important; }
         body::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: radial-gradient(circle at 20% 30%, rgba(255, 220, 240, 0.4) 0%, transparent 30%),
@@ -136,28 +136,6 @@
             font-size: 1rem; font-weight: 600; cursor: pointer; z-index: 2010; transition: 0.2s;
         }
         .skip-animation-btn:hover { background: rgba(255,255,255,0.3); }
-
-        /* ---------- ГЛАВНОЕ МЕНЮ ---------- */
-        .main-menu-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            display: none; justify-content: center; align-items: center; z-index: 500;
-        }
-        .main-menu-screen.active { display: flex; }
-        .main-menu-card {
-            background: rgba(255, 245, 250, 0.5); backdrop-filter: blur(20px); border-radius: 60px;
-            padding: 50px 60px; text-align: center; border: 3px solid rgba(255, 255, 255, 0.7);
-            box-shadow: 0 30px 60px rgba(240, 98, 146, 0.2); animation: menuAppear 0.4s ease forwards;
-        }
-        @keyframes menuAppear { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .main-menu-title { font-size: 3rem; color: #ad1457; margin-bottom: 40px; text-shadow: 0 3px 10px rgba(255,255,255,0.8); }
-        .main-menu-btn {
-            width: 100%; padding: 20px 40px; font-size: 1.5rem; font-weight: 600; color: #ad1457;
-            background: rgba(255, 255, 255, 0.6); border: 2px solid white; border-radius: 60px;
-            margin-bottom: 20px; cursor: pointer; box-shadow: 0 6px 0 #d47a9e;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .main-menu-btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #d47a9e; }
-        .main-menu-btn.logout { background: rgba(180, 100, 120, 0.3); }
 
         /* ---------- ИГРОВОЙ МИР ---------- */
         .game-wrapper {
@@ -658,7 +636,6 @@
             }
         };
         const eventNames = ['Хана · Цветение', 'Сакура · Ветер'];
-
         // Враги
         const enemies = [
             { name: 'Водяной дух', emoji: '💧', elements: [1, 2], hp: 10, atk: 2 },
@@ -672,6 +649,7 @@
             { name: 'Зелье удачи', emoji: '🧪', price: 200, description: 'Волшебное зелье, приносящее удачу. Увеличивает шанс выпадения 5★ предметов на 5% на 30 минут.' },
             { name: 'Амулет защиты', emoji: '🛡️', price: 80, description: 'Защитный амулет, который оберегает от неудач. Предотвращает проигрыш 50/50 один раз.' }
         ];
+
         // Состояние игры
         let gems = 16000;
         let twilight = 0;
@@ -942,11 +920,12 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // Управление с клавиатуры (WASD + стрелки + ЦФЫВ + У)
+        // Управление с клавиатуры (WASD + стрелки + ЦФЫВ + У) — ИСПРАВЛЕНО
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
             const code = e.code;
             
+            // Движение
             if (['w','a','s','d','ц','ф','ы','в'].includes(key) || code.startsWith('Arrow')) {
                 e.preventDefault();
             }
@@ -960,11 +939,15 @@
             if (key === 'a' || key === 'ф') keys.a = true;
             if (key === 'd' || key === 'в') keys.d = true;
             
-            if ((key === 'e' || key === 'у') && nearGazebo && !gazeboModal.classList.contains('active')) {
-                openGazeboMenu(nearGazebo.key, nearGazebo.name);
-            }
-            if ((key === 'e' || key === 'у') && nearEnemy && missionAccepted && !battleModal.classList.contains('active')) {
-                startBattle();
+            // Активация диалога/боя — ИСПРАВЛЕНО
+            if (key === 'e' || key === 'у') {
+                e.preventDefault();
+                if (nearGazebo && !gazeboModal.classList.contains('active')) {
+                    openGazeboMenu(nearGazebo.key, nearGazebo.name);
+                }
+                if (nearEnemy && missionAccepted && !battleModal.classList.contains('active')) {
+                    startBattle();
+                }
             }
         });
 
@@ -1245,7 +1228,6 @@
 
         function updateBannerUI() {
             if (isEventBanner) {
-                document.body.className = 'event-banner';
                 const eventItem = items5Event[currentEventName];
                 bannerIcon.textContent = eventItem.emoji;
                 bannerNameEl.innerHTML = `${currentEventName} <span class="sparkle">✦</span>`;
@@ -1254,7 +1236,6 @@
                 document.getElementById('standardBannerTab').classList.remove('active');
                 document.getElementById('nextBannerBtn').textContent = '⟳ Сменить ивент';
             } else {
-                document.body.className = 'standard-banner';
                 bannerIcon.textContent = '💙';
                 bannerNameEl.innerHTML = `Стандартный <span class="sparkle">✦</span>`;
                 bannerSub.innerHTML = '💙 Постоянный баннер';
