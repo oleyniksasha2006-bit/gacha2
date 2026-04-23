@@ -85,7 +85,7 @@
         .nav-btn:hover .nav-tooltip { opacity: 1; visibility: visible; left: 75px; }
         
         .right-sidebar {
-            position: fixed; right: 20px; top: 50%; transform: translateY(-50%);
+            position: fixed; right: 20px; top: 90px;
             display: flex; flex-direction: column; gap: 15px; z-index: 100;
         }
         .right-btn {
@@ -549,7 +549,7 @@
         <button class="logout-btn" id="logoutBtn">Выйти</button>
     </div>
 
-    <!-- МИР -->
+        <!-- МИР -->
     <div class="main-screen active" id="worldScreen">
         <div class="world-container">
             <div class="game-canvas" id="gameCanvas">
@@ -558,7 +558,7 @@
                 <div class="gazebo" id="gazeboShop" style="left: 600px; top: 400px;"><span class="gazebo-icon">🛒</span><span class="gazebo-name">Лавка</span><div class="interact-hint" id="hintShop">Нажмите E / У</div></div>
                 <div class="gazebo" id="gazeboForge" style="left: 400px; top: 450px;"><span class="gazebo-icon">⚒️</span><span class="gazebo-name">Кузница</span><div class="interact-hint" id="hintForge">Нажмите E / У</div></div>
                 <div class="gazebo" id="gazeboGarden" style="left: 700px; top: 150px;"><span class="gazebo-icon">🌿</span><span class="gazebo-name">Сад</span><div class="interact-hint" id="hintGarden">Нажмите E / У</div></div>
-                <div class="enemy-group" id="enemyGroup" style="left: 425px; top: 200px; display: none;"><span>👹</span><div class="interact-hint" id="hintEnemy">Нажмите E / У</div></div>
+                <div class="enemy-group" id="enemyGroup" style="left: 250px; top: 180px; display: none;"><span>👹</span><div class="interact-hint" id="hintEnemy">Нажмите E / У</div></div>
             </div>
         </div>
     </div>
@@ -796,7 +796,7 @@
         };
         let universeTasks = {
             flowerCollect: { name: '🌼 Собрать цветы', reward: 100, progress: 0, target: 5, completed: false, claimed: false, icon: '🌼', description: 'Собери 5 цветов в лесу' },
-            defeatEnemies: { name: '⚔️ Одолеть противников', reward: 100, progress: 0, target: 1, completed: false, claimed: false, icon: '⚔️', hidden: true }
+                        defeatEnemies: { name: '⚔️ Одолеть противников', reward: 20, progress: 0, target: 1, completed: false, claimed: false, icon: '⚔️', hidden: true }
         };
         let achievements = {
             firstLogin: { name: '🎮 Новичок', reward: 500, completed: false, claimed: false, icon: '🎮', description: 'Первый вход в игру' },
@@ -1127,16 +1127,100 @@
             let html = '';
             
             if (key === 'tavern') {
-                html = `<div style="padding:10px; color:#6a1b3a; font-size:1.1rem; line-height:1.6; max-height:300px; overflow-y:auto; margin-bottom:15px;">
-                    <p><strong>Трактирщик:</strong> "Приветствую, путник! Давно к нам не заходили новые лица."</p>
-                    <p><strong>Вы:</strong> "Здравствуйте. Что тут у вас происходит?"</p>
-                    <p><strong>Трактирщик:</strong> "Беда у нас. В лесу завелись монстры, нападают на торговцев. Никто не может пройти."</p>
-                    <p><strong>Вы:</strong> "Я могу помочь. Что нужно делать?"</p>
-                    <p><strong>Трактирщик:</strong> "Одолей трёх тварей, что поселились между таверной и садом. Справишься — получишь награду."</p>
-                    <p><strong>Вы:</strong> "По рукам. Я разберусь с ними."</p>
-                </div>`;
-                html += `<button class="gazebo-menu-btn" data-action="accept" style="width:100%; padding:15px; background:linear-gradient(145deg,#f8bbd0,#f48fb1); border:none; border-radius:40px; color:white; font-weight:600; cursor:pointer; box-shadow:0 4px 0 #b3415c;">Принять задание</button>`;
-            } else if (key === 'shop') {
+                // Диалог с шагами
+                let step = 0;
+                
+                function renderDialogStep() {
+                    let dialogHtml = '';
+                    
+                    if (step === 0) {
+                        dialogHtml = `<div style="padding:10px; color:#6a1b3a; font-size:1.1rem; line-height:1.6; margin-bottom:15px;">
+                            <p><strong>Трактирщик:</strong> "Приветствую, путник! Давно к нам не заходили новые лица."</p>
+                        </div>`;
+                        dialogHtml += `<button class="dialog-next-btn" style="width:100%; padding:15px; background:linear-gradient(145deg,#f8bbd0,#f48fb1); border:none; border-radius:40px; color:white; font-weight:600; cursor:pointer; box-shadow:0 4px 0 #b3415c; margin-bottom:10px;">➡️ Далее</button>`;
+                    } else if (step === 1) {
+                        dialogHtml = `<div style="padding:10px; color:#6a1b3a; font-size:1.1rem; line-height:1.6; margin-bottom:15px;">
+                            <p><strong>Трактирщик:</strong> "Приветствую, путник! Давно к нам не заходили новые лица."</p>
+                            <p style="margin-top:10px;"><strong>Вы:</strong> <em>(выберите ответ)</em></p>
+                        </div>`;
+                        dialogHtml += `<button class="dialog-choice-btn" data-choice="hello" style="width:100%; padding:12px; background:rgba(255,255,255,0.6); border:1px solid white; border-radius:30px; color:#6a1b3a; font-weight:500; cursor:pointer; margin-bottom:8px; text-align:left;">💬 "Здравствуйте. Что у вас тут происходит?"</button>`;
+                    } else if (step === 2) {
+                        dialogHtml = `<div style="padding:10px; color:#6a1b3a; font-size:1.1rem; line-height:1.6; margin-bottom:15px;">
+                            <p><strong>Трактирщик:</strong> "Приветствую, путник! Давно к нам не заходили новые лица."</p>
+                            <p><strong>Вы:</strong> "Здравствуйте. Что у вас тут происходит?"</p>
+                            <p style="margin-top:10px;"><strong>Трактирщик:</strong> "Беда у нас. В лесу завелись монстры, нападают на торговцев. Никто не может пройти."</p>
+                        </div>`;
+                        dialogHtml += `<button class="dialog-next-btn" style="width:100%; padding:15px; background:linear-gradient(145deg,#f8bbd0,#f48fb1); border:none; border-radius:40px; color:white; font-weight:600; cursor:pointer; box-shadow:0 4px 0 #b3415c; margin-bottom:10px;">➡️ Далее</button>`;
+                    } else if (step === 3) {
+                        dialogHtml = `<div style="padding:10px; color:#6a1b3a; font-size:1.1rem; line-height:1.6; margin-bottom:15px;">
+                            <p><strong>Трактирщик:</strong> "Приветствую, путник! Давно к нам не заходили новые лица."</p>
+                            <p><strong>Вы:</strong> "Здравствуйте. Что у вас тут происходит?"</p>
+                            <p><strong>Трактирщик:</strong> "Беда у нас. В лесу завелись монстры, нападают на торговцев. Никто не может пройти."</p>
+                            <p style="margin-top:10px;"><strong>Вы:</strong> <em>(выберите ответ)</em></p>
+                        </div>`;
+                        dialogHtml += `<button class="dialog-choice-btn" data-choice="help" style="width:100%; padding:12px; background:rgba(255,255,255,0.6); border:1px solid white; border-radius:30px; color:#6a1b3a; font-weight:500; cursor:pointer; margin-bottom:8px; text-align:left;">💪 "Я могу помочь. Что нужно делать?"</button>`;
+                        dialogHtml += `<button class="dialog-choice-btn" data-choice="decline" style="width:100%; padding:12px; background:rgba(255,255,255,0.4); border:1px solid white; border-radius:30px; color:#6a1b3a; font-weight:500; cursor:pointer; margin-bottom:8px; text-align:left;">🚪 "Извините, я спешу."</button>`;
+                    } else if (step === 4) {
+                        dialogHtml = `<div style="padding:10px; color:#6a1b3a; font-size:1.1rem; line-height:1.6; margin-bottom:15px;">
+                            <p><strong>Трактирщик:</strong> "Приветствую, путник! Давно к нам не заходили новые лица."</p>
+                            <p><strong>Вы:</strong> "Здравствуйте. Что у вас тут происходит?"</p>
+                            <p><strong>Трактирщик:</strong> "Беда у нас. В лесу завелись монстры, нападают на торговцев. Никто не может пройти."</p>
+                            <p><strong>Вы:</strong> "Я могу помочь. Что нужно делать?"</p>
+                            <p style="margin-top:10px;"><strong>Трактирщик:</strong> "Одолей трёх тварей, что поселились рядом с таверной. Справишься — получишь награду."</p>
+                        </div>`;
+                        dialogHtml += `<button class="dialog-next-btn" style="width:100%; padding:15px; background:linear-gradient(145deg,#f8bbd0,#f48fb1); border:none; border-radius:40px; color:white; font-weight:600; cursor:pointer; box-shadow:0 4px 0 #b3415c; margin-bottom:10px;">➡️ Далее</button>`;
+                    } else if (step === 5) {
+                        dialogHtml = `<div style="padding:10px; color:#6a1b3a; font-size:1.1rem; line-height:1.6; margin-bottom:15px;">
+                            <p><strong>Трактирщик:</strong> "Приветствую, путник! Давно к нам не заходили новые лица."</p>
+                            <p><strong>Вы:</strong> "Здравствуйте. Что у вас тут происходит?"</p>
+                            <p><strong>Трактирщик:</strong> "Беда у нас. В лесу завелись монстры, нападают на торговцев. Никто не может пройти."</p>
+                            <p><strong>Вы:</strong> "Я могу помочь. Что нужно делать?"</p>
+                            <p><strong>Трактирщик:</strong> "Одолей трёх тварей, что поселились рядом с таверной. Справишься — получишь награду."</p>
+                            <p style="margin-top:10px;"><strong>Вы:</strong> <em>(выберите ответ)</em></p>
+                        </div>`;
+                        dialogHtml += `<button class="dialog-choice-btn" data-choice="accept" style="width:100%; padding:12px; background:rgba(255,255,255,0.6); border:1px solid white; border-radius:30px; color:#6a1b3a; font-weight:500; cursor:pointer; margin-bottom:8px; text-align:left;">🤝 "По рукам. Разберусь с ними."</button>`;
+                        dialogHtml += `<button class="dialog-choice-btn" data-choice="think" style="width:100%; padding:12px; background:rgba(255,255,255,0.4); border:1px solid white; border-radius:30px; color:#6a1b3a; font-weight:500; cursor:pointer; margin-bottom:8px; text-align:left;">🤔 "Мне нужно подумать."</button>`;
+                    }
+                    
+                    gazeboMenuContent.innerHTML = dialogHtml;
+                    
+                    document.querySelectorAll('.dialog-next-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            step++;
+                            renderDialogStep();
+                        });
+                    });
+                    
+                    document.querySelectorAll('.dialog-choice-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const choice = btn.dataset.choice;
+                            
+                            if (choice === 'hello') {
+                                step = 2;
+                                renderDialogStep();
+                            } else if (choice === 'help') {
+                                step = 4;
+                                renderDialogStep();
+                            } else if (choice === 'decline' || choice === 'think') {
+                                showNotification('Трактирщик: "Жаль. Приходи, если передумаешь."', 0);
+                                gazeboModal.classList.remove('active');
+                            } else if (choice === 'accept') {
+                                if (!hasEnemyMission) {
+                                    hasEnemyMission = true;
+                                    universeTasks.defeatEnemies.hidden = false;
+                                }
+                                missionAccepted = true;
+                                updateEnemyVisibility();
+                                gazeboModal.classList.remove('active');
+                                showNotification('✅ Задание "Одолеть противников" добавлено в дневник!', 0);
+                                saveCloudProgress(currentUser);
+                            }
+                        });
+                    });
+                }
+                
+                renderDialogStep();
+            } else if (key === 'shop') { {
                 html = `<button class="gazebo-menu-btn" data-action="shop" style="width:100%; padding:15px; background:linear-gradient(145deg,#f8bbd0,#f48fb1); border:none; border-radius:40px; color:white; font-weight:600; cursor:pointer; box-shadow:0 4px 0 #b3415c;">🛒 Открыть магазин</button>`;
             } else if (key === 'forge') {
                 html = `<button class="gazebo-menu-btn" data-action="upgrade" style="width:100%; padding:15px; background:linear-gradient(145deg,#f8bbd0,#f48fb1); border:none; border-radius:40px; color:white; font-weight:600; cursor:pointer; box-shadow:0 4px 0 #b3415c;">⚒️ Улучшить предметы</button>`;
@@ -1874,21 +1958,38 @@
             currentItems = items;
             currentItemIndex = 0;
             
-            // Показываем анимацию звезды
+                        // Показываем анимацию звезды
             const skipToItems = await showStarAnimation(hasLegendary);
             
             if (skipToItems) {
-                // Пропускаем показ по одному, показываем список
+                // Нажали "Пропустить" — сразу показываем список
                 showItemsList(items);
-            } else if (items.length === 1) {
-                // Один предмет — показываем в модалке
-                showSingleItem(items[0]);
             } else {
-                // Несколько предметов — показываем первый, остальные в очередь
-                showSingleItem(items[0]);
-                // Остальные добавим в очередь для последовательного показа
-                for (let i = 1; i < items.length; i++) {
-                    modalQueue.push(items[i]);
+                // Не нажали — показываем последовательно
+                if (items.length === 1) {
+                    showSingleItem(items[0]);
+                    // После закрытия одиночного предмета показываем список
+                    const originalClose = closeGachaModal;
+                    closeGachaModal = function() {
+                        gachaModal.classList.remove('active');
+                        showItemsList(items);
+                        closeGachaModal = originalClose;
+                    };
+                } else {
+                    showSingleItem(items[0]);
+                    for (let i = 1; i < items.length; i++) {
+                        modalQueue.push(items[i]);
+                    }
+                    // После показа всех предметов показываем список
+                    const originalShowNext = showNextModalItem;
+                    showNextModalItem = function() {
+                        if (modalQueue.length > 0) {
+                            showSingleItem(modalQueue.shift());
+                        } else {
+                            showItemsList(items);
+                            showNextModalItem = originalShowNext;
+                        }
+                    };
                 }
             }
             
@@ -1964,7 +2065,9 @@
 
         function closeGachaModal() {
             gachaModal.classList.remove('active');
-            showNextModalItem();
+            if (modalQueue.length > 0) {
+                showSingleItem(modalQueue.shift());
+            }
         }
 
         // ---------- АНИМАЦИЯ ЗВЕЗДЫ ----------
