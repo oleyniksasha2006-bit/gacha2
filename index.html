@@ -2403,6 +2403,20 @@
         }
 
         function init() {
+            // 🔥 ПРИНУДИТЕЛЬНЫЙ ВЫХОД ПРИ ЗАГРУЗКЕ (ДОБАВИТЬ ЭТУ СТРОКУ)
+            auth.signOut();
+            
+            loginBtn.addEventListener('click', loginWithGoogle);
+            
+            logoutBtn.addEventListener('click', async () => {
+                await auth.signOut();
+                currentUser = null;
+                gameWrapper.classList.remove('visible');
+                mainMenuScreen.classList.remove('active');
+                loginScreen.classList.remove('hidden');
+            });
+            
+            // ... остальной код ...
             loginBtn.addEventListener('click', loginWithGoogle);
             
             logoutBtn.addEventListener('click', async () => {
